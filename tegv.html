@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEGV · Döküman Merkezi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f1;
+    --surface: #ffffff;
+    --surface2: #f0ece5;
+    --orange: #e85d1a;
+    --orange-light: #f5824a;
+    --orange-soft: #fdf0ea;
+    --blue: #1a3d6e;
+    --blue-mid: #2b5fa8;
+    --blue-soft: #e8eef8;
+    --text: #1a1a1a;
+    --muted: #7a7470;
+    --border: #e8e2da;
+    --divider: rgba(26,61,110,0.1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── TOP NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(247,245,241,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .nav-logo-mark {
+    width: 36px; height: 36px;
+    background: var(--orange);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .nav-brand {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: 0.2px;
+  }
+  .nav-brand span {
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .nav-meta {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.3px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 72px 48px 48px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 20px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 24px; height: 2px;
+    background: var(--orange);
+    border-radius: 2px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.6rem, 4.5vw, 4rem);
+    font-weight: 800;
+    color: var(--blue);
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--orange);
+  }
+
+  .hero-sub {
+    margin-top: 18px;
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 420px;
+    line-height: 1.7;
+  }
+
+  .hero-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .hero-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--blue);
+    line-height: 1;
+  }
+
+  .hero-stat-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .filter-btn {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.2px;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--orange);
+    color: var(--orange);
+    background: var(--orange-soft);
+  }
+
+  .filter-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex-shrink: 0;
+    width: 260px;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px 10px 40px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-wrap input::placeholder { color: var(--muted); }
+  .search-wrap input:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(232,93,26,0.08);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  .result-count {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  /* ── GRID ── */
+  .grid-section {
+    max-width: 1100px;
+    margin: 0 auto 80px;
+    padding: 0 48px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue);
+    opacity: 0.5;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    padding: 24px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    background: var(--orange-soft);
+    z-index: 1;
+  }
+
+  .card:hover .card-arrow {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #fff;
+    transform: rotate(45deg);
+  }
+
+  .card:hover .card-title { color: var(--orange); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-icon-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .card-tag {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .card-arrow {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--muted);
+    transition: all 0.25s;
+    flex-shrink: 0;
+  }
+
+  .card-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.45;
+    transition: color 0.2s;
+  }
+
+  /* ── CATEGORY COLORS ── */
+  .cat-pge    .card-icon { background: var(--blue-soft); color: var(--blue-mid); }
+  .cat-pge    .card-tag  { background: var(--blue-soft); color: var(--blue-mid); }
+  .cat-online .card-icon { background: rgba(43,95,168,0.1); color: var(--blue-mid); }
+  .cat-online .card-tag  { background: rgba(43,95,168,0.1); color: var(--blue-mid); }
+  .cat-sanat  .card-icon { background: var(--orange-soft); color: var(--orange); }
+  .cat-sanat  .card-tag  { background: var(--orange-soft); color: var(--orange); }
+  .cat-fen    .card-icon { background: rgba(26,61,110,0.08); color: var(--blue); }
+  .cat-fen    .card-tag  { background: rgba(26,61,110,0.08); color: var(--blue); }
+  .cat-diger  .card-icon { background: rgba(122,116,112,0.1); color: var(--muted); }
+  .cat-diger  .card-tag  { background: rgba(122,116,112,0.1); color: var(--muted); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+    display: none;
+    width: 100%;
+    background: var(--surface);
+  }
+
+  .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 14px; opacity: 0.4; }
+  .empty-state p { font-size: 14px; font-weight: 400; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 32px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.3px;
+  }
+
+  footer strong { color: var(--orange); font-weight: 600; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero { animation: fadeUp 0.5s ease both; }
+  .toolbar { animation: fadeUp 0.5s 0.1s ease both; }
+  .grid-section { animation: fadeUp 0.5s 0.15s ease both; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 720px) {
+    nav { padding: 0 20px; }
+    .hero { padding: 48px 20px 36px; grid-template-columns: 1fr; }
+    .hero-stats { text-align: left; flex-direction: row; gap: 32px; }
+    .toolbar { padding: 20px; }
+    .grid-section { padding: 0 20px; }
+    .search-wrap { width: 100%; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">T</div>
+    <div class="nav-brand">TEGV <span>Döküman Merkezi</span></div>
+  </div>
+  <div class="nav-meta">Türkiye Eğitim Gönüllüleri Vakfı</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Gönüllü Portalı</div>
+    <h1>Gönüllü<br><em>Yönergeleri</em></h1>
+    <p class="hero-sub">Tüm program içeriklerine tek yerden ulaş — hızlı, kolay, anında.</p>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat-num" id="totalCount">77</div>
+    <div class="hero-stat-label">Program</div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">Tümü</button>
+    <button class="filter-btn" data-filter="pge">PGE</button>
+    <button class="filter-btn" data-filter="online">Online</button>
+    <button class="filter-btn" data-filter="sanat">Sanat & Drama</button>
+    <button class="filter-btn" data-filter="fen">Fen & Matematik</button>
+    <button class="filter-btn" data-filter="diger">Diğer</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span class="result-count" id="resultCount"></span>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Program ara..." autocomplete="off">
+    </div>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="grid-section">
+  <div class="section-header">
+    <span class="section-title">Tüm Programlar</span>
+  </div>
+  <div class="cards-grid" id="cardsGrid"></div>
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">🔎</div>
+    <p>Aradığın program bulunamadı. Farklı bir kelime dene.</p>
+  </div>
+</div>
+
+<footer>
+  <strong>TEGV</strong> · Türkiye Eğitim Gönüllüleri Vakfı &nbsp;·&nbsp; Gönüllü Döküman Portalı
+</footer>
+
+<script>
+const programs = [
+  { title: "AB İçerikleri", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Es11OWphjG9Pr4kTfU9YmkEBz43UvcJSJQIREY8sAAA-Qw", cat: "diger", icon: "🌍", tag: "Genel" },
+  { title: "Ağzım Dişim Bakmak Benim İşim", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EpTF1BJPZctLpgBMzaYWaTEBxeM5wG7XlRHgCs1so0Q8gw", cat: "diger", icon: "🦷", tag: "Sağlık" },
+  { title: "Algo Dijital Bilişim", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EtyWVFyaEZhEju3vI5UTUJMBWmojW639wtNO9i_49YhT6Q", cat: "fen", icon: "💻", tag: "Teknoloji" },
+  { title: "Algo Dijital Bilişim-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Euelq9stSq9OkZHjQqKrzkkBC0la4oi6s4zWHIR1Gg1fWw", cat: "online", icon: "🖥️", tag: "Online" },
+  { title: "Allianz Motto Hareket", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Eui1xgujazpCjR9_y-R4h_EB3KuCHtIz94wC1fAtAZXziA", cat: "diger", icon: "🏃", tag: "Spor" },
+  { title: "Allianz Motto Hareket-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EmUWAcoQSkVJrYvWAgcpO34BantYdvD9dHsWfhRJNysrVg", cat: "online", icon: "⚡", tag: "Online" },
+  { title: "BİDEV – Basketbol Gönüllüleri Projesi", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EjWBGe6JENpJiM4-7kSj_IUBTA1BI6egDp5HeVSc4cfySg", cat: "diger", icon: "🏀", tag: "Spor" },
+  { title: "Bilim Kafası-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Et1R-QGaUQJIkWsrtlgT-EoB0fCXMfidVhU5PCNw3yP6jw", cat: "online", icon: "🔬", tag: "Online" },
+  { title: "Birlikte Öğrenelim", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Epf_pqsfceBPvVy0KRcOeBQBZQwQh5zwiCkETPY1TzwWkQ", cat: "diger", icon: "🤝", tag: "Genel" },
+  { title: "Birlikte Öğrenelim-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Ev6G9lKrTSVKna65xcLAYq4Bpae_NdRtxTEJbU6zN9T8fQ", cat: "online", icon: "📡", tag: "Online" },
+  { title: "DİBDİA Çocuk", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Eo_KBmsaGxBNhc3-3VdOvf8BPzA_PngOVXOKwCPDBe2SvA", cat: "diger", icon: "👦", tag: "Çocuk" },
+  { title: "DİBDİA Gönüllü", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EvHyxJH31WJLm--SFAuWE0kBi7udGhWnOkiGp7zGqwsW9A", cat: "diger", icon: "🙋", tag: "Gönüllü" },
+  { title: "Dijital Kaşifler", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/ElqIX9f3cFZAgr03nnRvbscBUH6NVUE_wIzC2BGK5pdLag", cat: "fen", icon: "🧭", tag: "Teknoloji" },
+  { title: "Doğayla Birlikte Kutu Oyunu", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Es0rKUCTx5xNndYyDiaePdgBjqjTSKA-OMqavSpbxcV69w", cat: "diger", icon: "🌿", tag: "Doğa" },
+  { title: "Dört Mevsim Projesi İçerikleri", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/En_qLl1VkLhInCisFWz-YeQBgKKQjsNcOSqvmxLZjX5uZw", cat: "diger", icon: "🍂", tag: "Proje" },
+  { title: "Drama Atölyesi", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EhtaPBu1_DJBgoNMf-wbLKoB0zVapSzXnUY-rW_w6RcFZA", cat: "sanat", icon: "🎭", tag: "Sanat" },
+  { title: "Düşler Atölyesi", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EsBwTIFllglLtuVmq9fTle0B0_JR-zxEoumsHzNmCuurbg", cat: "sanat", icon: "💭", tag: "Sanat" },
+  { title: "Düşler Atölyesi-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Em7x24s76lZBmW0TbaR8TaEBTQdV7rbm0WW1f9JGmmgFHA", cat: "online", icon: "✨", tag: "Online" },
+  { title: "Düşleyecek Büyüyecek Sanat Etkinliği-Gönüllü", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Eu1BRl6jFGBHiHdNdCKO42oBmMMNDnFTvkeiYt9CzURhrQ", cat: "sanat", icon: "🎨", tag: "Sanat" },
+  { title: "Düşleyecek Büyüyecek-Tiyatro Etkinliği-Gönüllü", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/ErPQW8q5J-BBg9GS0GWQlkQBVPKZ2MVbiKdAatadHG0VEA", cat: "sanat", icon: "🎬", tag: "Tiyatro" },
+  { title: "Eğlen Öğren Hijyen", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EmrLmp5S7qBEtzu0GXrq754B9ikTgUmsBdJk5JTj8xybMg", cat: "diger", icon: "🧼", tag: "Sağlık" },
+  { title: "Fen Eğlenerek Öğren", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Ev1wEtE1MuJKiulv6IieLlkBSJRPrvfEtR05yejoF8JMgQ", cat: "fen", icon: "🔭", tag: "Fen" },
+  { title: "Gizli Hazinem-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Etc3hp5TRuFMrxrQhQI34JgBrRGTHvKD_GCWVMP6_WVD5w", cat: "online", icon: "💎", tag: "Online" },
+  { title: "İngilizce Konuşma Kulübü Online / Yüz yüze", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Ek8qlwulcXlFsMtAhYOy6hEBHcTnngMt5dwY3w8bPTaQpA", cat: "diger", icon: "🇬🇧", tag: "Dil" },
+  { title: "Kısa Süreli Etkinlikler-Diğer", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EoKrhgW6jWRFpIzT6g3OcikBCrmioTYooVRpRhzTl7VNUw", cat: "diger", icon: "⏱️", tag: "Etkinlik" },
+  { title: "Kid's Box İngilizce", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EqkQOf3B0SNKhkozhImDj40BYo1p3Qwhj8Pe_PhcQoX_AA", cat: "diger", icon: "📦", tag: "Dil" },
+  { title: "Kod Adım", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EhM4NUbeAlxOiayHKVUaf04BIa1oXBQ2jY2CtA56UaXuYA", cat: "fen", icon: "⌨️", tag: "Kodlama" },
+  { title: "Kulüp Etkinlikleri", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EryXlYLR3VBGgQu3c6v2u3QB4ur1XT-Y5hHcE8G9htjLpw", cat: "diger", icon: "🎯", tag: "Kulüp" },
+  { title: "Kültür Dedektifleri", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Eu_a2_jGxTNMkYPNa9JsNOQBCDhhNWh2yjE6FMkkcbba2A", cat: "sanat", icon: "🕵️", tag: "Kültür" },
+  { title: "Matematik Eğlenerek Öğren", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EviIa5nX1uVBvqv1Cd6w1RUBn6NSxjthrX0beLbxNp4cWg", cat: "fen", icon: "🔢", tag: "Matematik" },
+  { title: "Mobilekids Trafik-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EruyEIX7BoRPrruhXbOzUNUB5hiQK1AvCiOOBb-gkveRpg", cat: "online", icon: "🚦", tag: "Online" },
+  { title: "Okul Destek Çalışmaları", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Ejn3vmzP0LJFuak6qTeuevsB7aDI3aFFg5FRkkGzkxhXlg", cat: "diger", icon: "📚", tag: "Okul" },
+  { title: "Okul Destek Çalışmaları-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EnY7IGqNtjtEjXwfTOsmjMABtUaSwiosXdf69YU1r2YPAw", cat: "online", icon: "🖱️", tag: "Online" },
+  { title: "Okul Etkinlikleri", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Et4ycjNpPkBOnMsMZbOL0kYBE5qti3Hfq_mxZJu0N7O-fw", cat: "diger", icon: "🏫", tag: "Okul" },
+  { title: "Okula Dönüş Programı", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EiRKQsvPcIFAhjCQUd4DzQ4B06ZXnKTiqhEdcbFP-txtlQ", cat: "diger", icon: "🎒", tag: "Okul" },
+  { title: "Okuyorum Oynuyorum", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EleqaXhX0JhNsaktGdLuSZgBpulj6hg8zCa_KaQcFVncfA", cat: "diger", icon: "📖", tag: "Okuma" },
+  { title: "Okuyorum Oynuyorum-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EqLF4bJfUb1FoRaDXX2h7YwBQU3vUQbUBkWKiZwPiOkFgA", cat: "online", icon: "📲", tag: "Online" },
+  { title: "Okuyorum Oynuyorum - Kitap Atölyesi - Modül 2", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Ei50mUhjhI5Kr2tLWwfYovQBNw17SU0BS9e2-Mf6deUbtQ", cat: "diger", icon: "📕", tag: "Okuma" },
+  { title: "Okuyorum Oynuyorum - Sözcük Oyunları - Modül 3", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Euy8Bhvhh3NJsPm5qEo4rukBO10hbGbxYzprOOyiFYBSUQ", cat: "diger", icon: "🔤", tag: "Okuma" },
+  { title: "Online-Özgür Atölye", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Ei6I7lDchE9Dob9eR5V351sBrMKIxSwqC-wauPoqZOY1Jw", cat: "online", icon: "🎪", tag: "Online" },
+  { title: "Öğrenen Çocuk Sorumlu Birey", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Eu4FLpgz5vtOuTwuIpRgzeABTHnxyYua_62yYrGRJF1ivA", cat: "diger", icon: "🌱", tag: "Gelişim" },
+  { title: "Özel Gün Etkinlikleri (29 Ekim, 20 Kasım, 23 Nisan)", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Er_JE9ATCOVOjmA0iUN1ImYBkNOciLPncq-MGxXDXQt5Pg", cat: "diger", icon: "🎉", tag: "Etkinlik" },
+  { title: "Özgür Atölye İklim", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EvgU6vIkCyJAs301hk9HGSABG2DGOCRfinKy7u7OOqgPTw", cat: "sanat", icon: "🌍", tag: "İklim" },
+  { title: "Papuduk - Doğa Sevgisi ve Çevre", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Ep5as3l2CA1PlHoVXedKqoUB0HLTo1Vp26AypB-Y0XldvQ", cat: "diger", icon: "🦜", tag: "Doğa" },
+  { title: "Papuduk ile Hayvan Hakları-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Etk_xV3c3dZPsB-zsJxYlCABH4yEl6lROk2djVsSehkXag", cat: "online", icon: "🐾", tag: "Online" },
+  { title: "PGE-1.Sınıflarla Çalışma ve Davranış Yönetimi", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EohRHV3mZGxHqhSE11VlsvkBW1UIMYKuOwHvJDyC66iU4g", cat: "pge", icon: "🏆", tag: "PGE" },
+  { title: "PGE-Algo Dijital Bilişim", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EjadX7pQButJjbVPWW4pa9AB4u21h7ZiYEUVXqnuSerX_A", cat: "pge", icon: "💡", tag: "PGE" },
+  { title: "PGE-Allianz Motto Hareket", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EkhH_1hFJGdLu2WB8RSKieMB9lk-ZbkO1eZxTx17jEYGSQ", cat: "pge", icon: "🏅", tag: "PGE" },
+  { title: "PGE-Drama Atölyesi", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EkBw0ewSS9VGh47O7Nz8-2MB_fx1coftYyhZQSiGFhIy5Q", cat: "pge", icon: "🎭", tag: "PGE" },
+  { title: "PGE-Düşler Atölyesi Modül-2", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EjgP-nK7KkxNovYCXFATG6gBtluBFH0bmx0SGsTzvPW-kw", cat: "pge", icon: "💫", tag: "PGE" },
+  { title: "PGE-Düşleyecek Büyüyecek Sanat Etkinlikleri", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Eh_Xxvg7pbFCtyrKQua8DD0B3ZqDnW8BjcTdhWBdXfGBJA", cat: "pge", icon: "🖼️", tag: "PGE" },
+  { title: "PGE-Düşleyecek Büyüyecek Tiyatro Etkinlikleri", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EqiEvmf-zoJLqs2gOhpmaRMB1GL5DtC8-GovMvK1iQwUEg", cat: "pge", icon: "🎬", tag: "PGE" },
+  { title: "PGE-Fen Eğlenerek Öğren Modül-1", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EmUreVQrkFxIuVWQFVCOAMgBwk3DOHx9WJPo9Q5ZbBYfpA", cat: "pge", icon: "⚗️", tag: "PGE" },
+  { title: "PGE-Fen Eğlenerek Öğren Modül-2", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Eimodw4MF_REmCoWi_bcgjgBDKhYVVbxm4_6cp5Hyx-GRw", cat: "pge", icon: "🧪", tag: "PGE" },
+  { title: "PGE-İngilizce", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EoJEqLbwfydMhSI-1BK19HEBKj5_NRpEaIedZ2IKeq6n7A", cat: "pge", icon: "🌐", tag: "PGE" },
+  { title: "PGE-Matematik Eğlenerek Öğren Modül-1", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EqfNnd_CcZZOthHhsp4BZAkBSB1zujod0CQgRKUrwHl2aA", cat: "pge", icon: "📐", tag: "PGE" },
+  { title: "PGE-Matematik Eğlenerek Öğren Modül-2", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EorteWgO-NBFvHnq6ybuQZABJ90QJAW0wvfKcN4py6HJoA", cat: "pge", icon: "📏", tag: "PGE" },
+  { title: "PGE-Okuyorum Oynuyorum", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EsdJhp7WTZ9NuMTPlyT-TMUBs7g7QoP48cwww_UeawS_Wg", cat: "pge", icon: "📗", tag: "PGE" },
+  { title: "PEG-Okuyorum Oynuyorum - Kitap Atölyesi - Modül 2", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EiaSUIFR-i9FgkyLlx7t4-cB864n1IKz0OS0TaOT2Q_MSw", cat: "pge", icon: "📘", tag: "PGE" },
+  { title: "PGE-Okuyorum Oynuyorum - Sözcük Oyunları - Modül 3", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EofKVxiTv-hEr4eB1akB6LcBxN608IZO3MP-f6NJDxyOkA", cat: "pge", icon: "📙", tag: "PGE" },
+  { title: "PGE-Özgür Atölye", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EvlcQOsSnU5Cmb74aBWtAPABTaUkg5p1B8qaqewOfVKOzw", cat: "pge", icon: "🎠", tag: "PGE" },
+  { title: "PGE-Tasarım Fabrikası", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EqRlCzQ6GZlGu5fvPaYxHAkBcdjXnIxEH89N9j9JFqubww", cat: "pge", icon: "🏭", tag: "PGE" },
+  { title: "PGE-Temel Gönüllü Eğitimi İçerik", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EnmowX6d9udCrlanhYpPtrgBYJIYHNpbSJ3Q9GwQx9TofQ", cat: "pge", icon: "📋", tag: "PGE" },
+  { title: "Pippi Uzunçorap", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Eq7Myu_wnS5AipPYB9pHyGQBsqu2K0PW5HO4DGcaw4unDQ", cat: "sanat", icon: "🧧", tag: "Edebiyat" },
+  { title: "Sağlıklı Yaşam Etkinliği", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EmCs8TbOcv5PvsAkUwiTTpkBx9bvBh6VESHR-mnPNwCdqw", cat: "diger", icon: "💚", tag: "Sağlık" },
+  { title: "Sayıların Dünyası-Online", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Eone-hdAVmxPp6eIh6Bg804BarPTpAJk3tN8hEq5bK2cqw", cat: "online", icon: "🔢", tag: "Online" },
+  { title: "Sosyal Duygusal Öğrenme SDÖ-Gizli Hazinem", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EgwtmNri2XVJlId3EZqn_vwB5eXgkcHOFdmPbqVwRqFgfQ", cat: "diger", icon: "❤️", tag: "Gelişim" },
+  { title: "Su Nefestir", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/ElVcb5ZAfktHo4aMpQEL6EABbujrPkrDH4ZyvcZlYqoHAQ", cat: "diger", icon: "💧", tag: "Doğa" },
+  { title: "Tasarım Beceri Atölyesi", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EnAM1juVTLxFirqFIdhY4wcBkLbQHrxL_pQyuLJzXIcvow", cat: "sanat", icon: "✏️", tag: "Tasarım" },
+  { title: "TEGV Afet Etkinlik El Kitabı", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EnquT_v_YhhEq8pbPTqua0kB51g3I7nZw9YcqU_FGlGF0g", cat: "diger", icon: "🆘", tag: "Afet" },
+  { title: "Trafiğin Yıldızları", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EkvpoUHaM8dMuzY906E-gyoBnpp_WbDC2E1O9eYBERM9KA", cat: "diger", icon: "⭐", tag: "Trafik" },
+  { title: "Yaz Etkinlikleri", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/Ev0olpu5KTxJsy8aey4AmGQBqJXert7GO9rJKb-lXaSW1Q", cat: "diger", icon: "☀️", tag: "Etkinlik" },
+  { title: "Yüz Yüze-Özgür Atölye", url: "https://tegv.sharepoint.com/:f:/s/DokumanYonetimi/EtGyAE3BCgFGkgh8fulqCagBTamt9wzUVLDFPbI_jq1exA", cat: "sanat", icon: "🎨", tag: "Sanat" },
+];
+
+let activeFilter = 'all';
+let searchVal = '';
+
+function render() {
+  const grid = document.getElementById('cardsGrid');
+  const empty = document.getElementById('emptyState');
+  const countEl = document.getElementById('resultCount');
+
+  const filtered = programs.filter(p => {
+    const matchCat = activeFilter === 'all' || p.cat === activeFilter;
+    const matchSearch = p.title.toLowerCase().includes(searchVal.toLowerCase());
+    return matchCat && matchSearch;
+  });
+
+  grid.innerHTML = '';
+
+  if (filtered.length === 0) {
+    empty.style.display = 'block';
+    grid.style.display = 'none';
+    countEl.textContent = '';
+    return;
+  }
+
+  empty.style.display = 'none';
+  grid.style.display = 'grid';
+  countEl.textContent = searchVal ? `${filtered.length} sonuç` : `${filtered.length} program`;
+
+  filtered.forEach((p) => {
+    const a = document.createElement('a');
+    a.href = p.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.className = `card cat-${p.cat}`;
+    a.innerHTML = `
+      <div class="card-header">
+        <div class="card-icon-wrap">
+          <div class="card-icon">${p.icon}</div>
+          <span class="card-tag">${p.tag}</span>
+        </div>
+        <div class="card-arrow">↗</div>
+      </div>
+      <div class="card-title">${p.title}</div>
+    `;
+    grid.appendChild(a);
+  });
+}
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchVal = e.target.value;
+  render();
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+render();
+document.getElementById('totalCount').textContent = programs.length;
+</script>
+</body>
+</html>

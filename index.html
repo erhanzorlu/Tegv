@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haftalık Gönüllü Ders Programı</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FAF8F5;
+            --white: #FFFFFF;
+            --sage: #8BAF9A;
+            --sage-pale: #EEF5F1;
+            --sage-light: #D4E6DC;
+            --blush-light: #F7EAE5;
+            --blush: #E8C4B8;
+            --sky-light: #DFF0F7;
+            --sky: #A8C5DA;
+            --amber-light: #F5E8D4;
+            --amber: #D4A96A;
+            --lav-light: #F3EEF8;
+            --lav: #C9B8E0;
+            --text-dark: #2C3130;
+            --text-mid: #5A6360;
+            --text-soft: #9AABA6;
+            --border: #ECF0ED;
+            --shadow: rgba(44,49,48,0.08);
+            --sali-bg: #F0F7F3; --sali-accent: #6A9E82;
+            --carsamba-bg: #F0F4FA; --carsamba-accent: #6A85B5;
+            --persembe-bg: #FBF4ED; --persembe-accent: #C48A50;
+            --cuma-bg: #F5F0F8; --cuma-accent: #9B7EC8;
+            --cumartesi-bg: #FEF4F0; --cumartesi-accent: #C97070;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); padding: 36px 16px 64px; }
+
+        .layout { display: flex; gap: 24px; max-width: 1500px; margin: 0 auto; align-items: flex-start; }
+        .main { flex: 1; min-width: 0; }
+
+        /* Notes sidebar */
+        .notes-sidebar { width: 260px; flex-shrink: 0; position: sticky; top: 24px; }
+        .notes-card { background: var(--white); border-radius: 18px; box-shadow: 0 4px 28px var(--shadow); overflow: hidden; animation: fadeUp .55s .3s ease both; }
+        .notes-header { background: var(--sage-pale); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--sage-light); }
+        .notes-header-left { display: flex; align-items: center; gap: 8px; }
+        .notes-icon { width: 28px; height: 28px; background: var(--sage); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+        .notes-title { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600; color: var(--text-dark); }
+        .notes-count { font-size: 10px; font-weight: 600; background: var(--sage); color: white; padding: 2px 7px; border-radius: 100px; }
+        .notes-list { padding: 12px; display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; }
+        .notes-list::-webkit-scrollbar { width: 4px; }
+        .notes-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .note-item { background: var(--cream); border-radius: 12px; padding: 10px 12px; border: 1px solid var(--border); animation: noteIn .25s ease both; }
+        @keyframes noteIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+        .note-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; margin-bottom: 5px; }
+        .note-date { font-size: 9.5px; color: var(--text-soft); font-weight: 500; white-space: nowrap; }
+        .note-delete { background: none; border: none; cursor: pointer; color: var(--text-soft); font-size: 13px; line-height: 1; padding: 0 2px; transition: color .2s; flex-shrink: 0; }
+        .note-delete:hover { color: #C97070; }
+        .note-text { font-size: 12.5px; color: var(--text-dark); line-height: 1.5; word-break: break-word; white-space: pre-wrap; }
+        .notes-empty { padding: 20px 12px; text-align: center; color: var(--text-soft); font-size: 12px; font-style: italic; }
+        .notes-empty-icon { font-size: 28px; display: block; margin-bottom: 8px; opacity: .5; }
+        .notes-input-area { padding: 12px; border-top: 1px solid var(--border); background: #FDFCFA; }
+        .notes-textarea { width: 100%; resize: none; border: 1.5px solid var(--border); border-radius: 10px; padding: 9px 11px; font-family: 'DM Sans', sans-serif; font-size: 12.5px; color: var(--text-dark); background: var(--white); outline: none; transition: border-color .2s; min-height: 72px; }
+        .notes-textarea:focus { border-color: var(--sage); }
+        .notes-textarea::placeholder { color: var(--text-soft); }
+        .notes-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .notes-char { font-size: 10px; color: var(--text-soft); }
+        .btn-add { background: var(--sage); color: white; border: none; border-radius: 8px; padding: 7px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .2s, transform .1s; }
+        .btn-add:hover { background: #7A9E8A; }
+        .btn-add:active { transform: scale(.97); }
+        .btn-add:disabled { background: var(--border); cursor: default; }
+
+        /* Header */
+        header { text-align: center; margin-bottom: 36px; animation: fadeDown .55s ease both; }
+        .tag { display: inline-block; background: var(--sage-pale); color: var(--sage); font-size: 10.5px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 5px 15px; border-radius: 100px; margin-bottom: 12px; }
+        header h1 { font-family: 'Playfair Display', serif; font-size: clamp(24px,3vw,36px); color: var(--text-dark); }
+        header p { color: var(--text-soft); font-size: 13px; margin-top: 5px; }
+        .divider { width: 36px; height: 2px; background: var(--sage); margin: 12px auto 0; border-radius: 2px; }
+
+        /* Legend */
+        .legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 36px; animation: fadeUp .55s .1s ease both; }
+        .legend-item { display: flex; align-items: center; gap: 6px; background: var(--white); padding: 5px 12px; border-radius: 100px; font-size: 11.5px; font-weight: 500; color: var(--text-mid); box-shadow: 0 1px 5px var(--shadow); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+        /* Section title */
+        .section-title { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+        .section-title h2 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; color: var(--text-dark); white-space: nowrap; }
+        .section-line { flex: 1; height: 1px; background: var(--border); }
+
+        /* Table card */
+        .table-card { background: var(--white); border-radius: 18px; overflow-x: auto; box-shadow: 0 4px 28px var(--shadow); margin-bottom: 48px; animation: fadeUp .55s .15s ease both; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        col.c-day  { width: 84px; }
+        col.c-time { width: 112px; }
+        col.c-act  { width: calc((100% - 196px) / 6); }
+        thead th { background: var(--cream); padding: 12px 8px; font-size: 9.5px; font-weight: 600; letter-spacing: 1.3px; text-transform: uppercase; color: var(--text-soft); border-bottom: 2px solid var(--border); text-align: center; }
+        tr.day-separator td { padding: 0; height: 10px; border: none; background: var(--cream) !important; }
+        tbody td { border: 1px solid var(--border); padding: 13px 8px; text-align: center; vertical-align: middle; }
+        td.day-cell { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600; vertical-align: middle; background: var(--white) !important; }
+        .day-label { display: inline-block; padding: 6px 10px; border-radius: 10px; font-size: 12.5px; font-weight: 600; }
+        .day-sali      { background: var(--sali-bg);      color: var(--sali-accent); }
+        .day-carsamba  { background: var(--carsamba-bg);  color: var(--carsamba-accent); }
+        .day-persembe  { background: var(--persembe-bg);  color: var(--persembe-accent); }
+        .day-cuma      { background: var(--cuma-bg);      color: var(--cuma-accent); }
+        .day-cumartesi { background: var(--cumartesi-bg); color: var(--cumartesi-accent); }
+
+        tr.sali-row td      { background: #FAFDFB; }
+        tr.sali-row-alt td  { background: var(--sali-bg); }
+        tr.carsamba-row td     { background: #F8FBFF; }
+        tr.carsamba-row-alt td { background: var(--carsamba-bg); }
+        tr.persembe-row td     { background: #FDFAF6; }
+        tr.persembe-row-alt td { background: var(--persembe-bg); }
+        tr.cuma-row td         { background: #FBF8FE; }
+        tr.cuma-row-alt td     { background: var(--cuma-bg); }
+        tr.cumartesi-row td     { background: #FFFAF9; }
+        tr.cumartesi-row-alt td { background: var(--cumartesi-bg); }
+        td.day-cell  { background: var(--white) !important; }
+        td.time-cell { background: var(--cream) !important; }
+
+        tr.sali-row td:first-child, tr.sali-row-alt td:first-child { border-left: 3px solid var(--sali-accent) !important; }
+        tr.carsamba-row td:first-child, tr.carsamba-row-alt td:first-child { border-left: 3px solid var(--carsamba-accent) !important; }
+        tr.persembe-row td:first-child, tr.persembe-row-alt td:first-child { border-left: 3px solid var(--persembe-accent) !important; }
+        tr.cuma-row td:first-child, tr.cuma-row-alt td:first-child { border-left: 3px solid var(--cuma-accent) !important; }
+        tr.cumartesi-row td:first-child, tr.cumartesi-row-alt td:first-child { border-left: 3px solid var(--cumartesi-accent) !important; }
+
+        .time-icon { display: inline-block; width: 20px; height: 20px; border-radius: 6px; font-size: 11px; line-height: 20px; margin-bottom: 4px; }
+        .morning   .time-icon { background: var(--amber-light); }
+        .afternoon .time-icon { background: var(--sky-light); }
+        .slot      .time-icon { background: #EEF0FF; }
+        .time-name  { font-size: 10.5px; font-weight: 600; color: var(--text-mid); display: block; }
+        .time-range { font-size: 10px; color: var(--text-soft); display: block; margin-top: 1px; }
+
+        td.empty { color: #D8E0DA; font-size: 16px; }
+        td.filled { vertical-align: top; padding: 11px 8px; }
+        .chip { display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: .9px; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; margin-bottom: 7px; }
+        .chip-dusler   { background: var(--sage-pale);   color: var(--sage); }
+        .chip-okuma    { background: var(--blush-light);  color: #C9847A; }
+        .chip-tba      { background: var(--sky-light);    color: #5B95B5; }
+        .chip-ofis     { background: var(--amber-light);  color: #B8893A; }
+        .chip-bto      { background: #FFF0E8;  color: #C97840; }
+        .chip-etkinlik { background: var(--lav-light); color: #9B7EC8; border: 1px dashed var(--lav); }
+        .chip-sanat    { background: #FEF0F5; color: #C0607A; }
+        .chip-mat      { background: #F0F8EE; color: #5A9A4A; }
+        .vols { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        .vols li a { font-size: 13.5px; font-weight: 500; color: var(--text-dark); text-decoration: none; transition: color .2s; display: block; }
+        .vols li a:hover { color: var(--sage); }
+        .vol-tbd { font-size: 11px; color: var(--text-soft); font-style: italic; }
+        td.tbd { font-size: 11px; font-style: italic; color: var(--lav); }
+
+        @keyframes fadeDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:none; } }
+        @keyframes fadeUp   { from { opacity:0; transform:translateY(12px);  } to { opacity:1; transform:none; } }
+
+        footer { text-align: center; margin-top: 12px; font-size: 11.5px; color: var(--text-soft); }
+
+        @media (max-width: 960px) {
+            .layout { flex-direction: column; }
+            .notes-sidebar { width: 100%; position: static; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="tag">Gönüllü Programı</div>
+        <h1>Haftalık Ders Programı</h1>
+        <p>Salı – Cumartesi &nbsp;·&nbsp; Her hafta güncellenir</p>
+        <div class="divider"></div>
+    </header>
+
+    <div class="legend">
+        <div class="legend-item"><span class="dot" style="background:#8BAF9A"></span>Düşler Atölyesi</div>
+        <div class="legend-item"><span class="dot" style="background:#C97840"></span>BTO</div>
+        <div class="legend-item"><span class="dot" style="background:#5B95B5"></span>TBA</div>
+        <div class="legend-item"><span class="dot" style="background:#C9847A"></span>Okuma Adası</div>
+        <div class="legend-item"><span class="dot" style="background:#9B7EC8"></span>Etkinlik-2</div>
+        <div class="legend-item"><span class="dot" style="background:#B8893A"></span>Ofis Gönüllüsü</div>
+        <div class="legend-item"><span class="dot" style="background:#C0607A"></span>Sanat Atölyesi</div>
+        <div class="legend-item"><span class="dot" style="background:#5A9A4A"></span>Matematik</div>
+    </div>
+
+<div class="layout">
+<div class="main">
+
+    <!-- ══ HAFTA İÇİ ══ -->
+    <div class="section-title">
+        <h2>Hafta İçi Programı</h2>
+        <div class="section-line"></div>
+        <span style="font-size:12px;color:var(--text-soft);white-space:nowrap">Salı – Cuma</span>
+    </div>
+
+    <div class="table-card">
+    <table>
+        <colgroup>
+            <col class="c-day"><col class="c-time">
+            <col class="c-act"><col class="c-act"><col class="c-act">
+            <col class="c-act"><col class="c-act"><col class="c-act">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Gün</th><th>Zaman Dilimi</th>
+                <th>Düşler Atölyesi</th><th>BTO</th><th>TBA</th>
+                <th>Okuma Adası</th><th>Etkinlik-2</th><th>Ofis Gönüllüsü</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <!-- ── SALI ── -->
+            <tr class="sali-row">
+                <td class="day-cell" rowspan="2"><span class="day-label day-sali">Salı</span></td>
+                <td class="time-cell morning">
+                    <div class="time-icon">☀️</div>
+                    <span class="time-name">Öğleden Önce</span>
+                    <span class="time-range">10:00 – 12:00</span>
+                </td>
+                <td class="filled">
+                    <div class="chip chip-dusler">Düşler Atölyesi</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905340446734" target="_blank">Seyhan Orhan</a></li>
+                        <li><a href="https://wa.me/905324546818" target="_blank">Sibel Koçak</a></li>
+                    </ul>
+                </td>
+                <td class="empty">—</td>
+                <td class="empty">—</td>
+                <td class="filled">
+                    <div class="chip chip-okuma">Okuyorum Oynuyorum</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905325172728" target="_blank">Fulya Damar</a></li>
+                        <li><a href="https://wa.me/905323645261" target="_blank">Füsun Kaytaz</a></li>
+                    </ul>
+                </td>
+                <td class="empty">—</td>
+                <td class="filled">
+                    <div class="chip chip-ofis">Ofis</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905347089830" target="_blank">Semra Naz Kamiloğlu</a></li>
+                    </ul>
+                </td>
+            </tr>
+            <tr class="sali-row-alt">
+                <td class="time-cell afternoon">
+                    <div class="time-icon">🌤️</div>
+                    <span class="time-name">Öğleden Sonra</span>
+                    <span class="time-range">14:30 – 17:00</span>
+                </td>
+                <td class="empty">—</td>
+                <td class="empty">—</td>
+                <td class="filled">
+                    <div class="chip chip-tba">TBA</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905333362982" target="_blank">Serap Özgen</a></li>
+                        <li><a href="https://wa.me/905334272502" target="_blank">Güner Konyalı</a></li>
+                    </ul>
+                </td>
+                <td class="filled">
+                    <div class="chip chip-okuma">Okuma Adası</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905337758067" target="_blank">Bahar Paröz</a></li>
+                        <li><a href="https://wa.me/905322208389" target="_blank">İnci Şahin</a></li>
+                    </ul>
+                </td>
+                <td class="tbd">Yakında<br>belirlenir</td>
+                <td class="empty">—</td>
+            </tr>
+
+            <tr class="day-separator"><td colspan="8"></td></tr>
+
+            <!-- ── ÇARŞAMBA ── -->
+            <tr class="carsamba-row">
+                <td class="day-cell" rowspan="2"><span class="day-label day-carsamba">Çarşamba</span></td>
+                <td class="time-cell morning">
+                    <div class="time-icon">☀️</div>
+                    <span class="time-name">Öğleden Önce</span>
+                    <span class="time-range">10:00 – 12:00</span>
+                </td>
+                <td class="empty">—</td>
+                <td class="filled">
+                    <div class="chip chip-bto">Algo</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905352419701" target="_blank">Sude Naz Sipor</a></li>
+                        <li><a href="https://wa.me/905546534948" target="_blank">Erhan Zorlu</a></li>
+                    </ul>
+                </td>
+                <td class="filled">
+                    <div class="chip chip-tba">Ukulele</div>
+                    <ul class="vols">
+                        <li class="vol-tbd">Belirlenmedi</li>
+                        <li class="vol-tbd">Belirlenmedi</li>
+                    </ul>
+                </td>
+                <td class="filled">
+                    <div class="chip chip-okuma">Okuyorum Oynuyorum</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905533153719" target="_blank">Feride Gahramanlı</a></li>
+                        <li><a href="https://wa.me/905534165337" target="_blank">Müjgan Tuzcu</a></li>
+                    </ul>
+                </td>
+                <td class="filled">
+                    <div class="chip chip-etkinlik">Tiyatro</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905438251868" target="_blank">Rumeysa Topal</a></li>
+                        <li><a href="https://wa.me/905314705283" target="_blank">Sude Bingöl</a></li>
+                    </ul>
+                </td>
+                <td class="filled">
+                    <div class="chip chip-ofis">Ofis</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905389529088" target="_blank">Gülse Kanadlı</a></li>
+                    </ul>
+                </td>
+            </tr>
+            <tr class="carsamba-row-alt">
+                <td class="time-cell afternoon">
+                    <div class="time-icon">🌤️</div>
+                    <span class="time-name">Öğleden Sonra</span>
+                    <span class="time-range">14:30 – 17:00</span>
+                </td>
+                <td class="filled">
+                    <div class="chip chip-sanat">Sanat Atölyesi</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905522123710" target="_blank">Sena Demir</a></li>
+                    </ul>
+                </td>
+                <td class="empty">—</td>
+                <td class="filled">
+                    <div class="chip chip-mat">Matematik</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905439269440" target="_blank">Zehra Vesile Çıtak</a></li>
+                        <li class="vol-tbd">Belirlenmedi</li>
+                    </ul>
+                </td>
+                <td class="empty">—</td>
+                <td class="filled">
+                    <div class="chip chip-mat">Matematik</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905324558031" target="_blank">Sibel Coşkun</a></li>
+                    </ul>
+                </td>
+                <td class="filled">
+                    <div class="chip chip-ofis">Ofis</div>
+                    <ul class="vols">
+                        <li><a href="https://wa.me/905077908181" target="_blank">Neslihan Düzdemir</a></li>
+                    </ul>
+                </td>
+            </tr>
+
+            <tr class="day-separator"><td colspan="8"></td></tr>
+
+            <!-- ── PERŞEMBE ── -->
+            <tr class="persembe-row">
+                <td class="day-cell" rowspan="2"><span class="day-label day-persembe">Perşembe</span></td>
+                <td class="time-cell morning">
+                    <div class="time-icon">☀️</div>
+                    <span class="time-name">Öğleden Önce</span>
+                    <span class="time-range">10:00 – 12:00</span>
+                </td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+            </tr>
+            <tr class="persembe-row-alt">
+                <td class="time-cell afternoon">
+                    <div class="time-icon">🌤️</div>
+                    <span class="time-name">Öğleden Sonra</span>
+                    <span class="time-range">14:30 – 17:00</span>
+                </td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+            </tr>
+
+            <tr class="day-separator"><td colspan="8"></td></tr>
+
+            <!-- ── CUMA ── -->
+            <tr class="cuma-row">
+                <td class="day-cell" rowspan="2"><span class="day-label day-cuma">Cuma</span></td>
+                <td class="time-cell morning">
+                    <div class="time-icon">☀️</div>
+                    <span class="time-name">Öğleden Önce</span>
+                    <span class="time-range">10:00 – 12:00</span>
+                </td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+            </tr>
+            <tr class="cuma-row-alt">
+                <td class="time-cell afternoon">
+                    <div class="time-icon">🌤️</div>
+                    <span class="time-name">Öğleden Sonra</span>
+                    <span class="time-range">14:30 – 17:00</span>
+                </td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+            </tr>
+
+        </tbody>
+    </table>
+    </div>
+
+    <!-- ══ HAFTA SONU ══ -->
+    <div class="section-title">
+        <h2>Hafta Sonu Programı</h2>
+        <div class="section-line"></div>
+        <span style="font-size:12px;color:var(--text-soft);white-space:nowrap">Cumartesi</span>
+    </div>
+
+    <div class="table-card">
+    <table>
+        <colgroup>
+            <col class="c-day"><col class="c-time">
+            <col class="c-act"><col class="c-act"><col class="c-act">
+            <col class="c-act"><col class="c-act"><col class="c-act">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Gün</th><th>Zaman Dilimi</th>
+                <th>Düşler Atölyesi</th><th>BTO</th><th>TBA</th>
+                <th>Okuma Adası</th><th>Etkinlik-2</th><th>Ofis Gönüllüsü</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="cumartesi-row">
+                <td class="day-cell" rowspan="4"><span class="day-label day-cumartesi">Cumartesi</span></td>
+                <td class="time-cell slot"><div class="time-icon">🌅</div><span class="time-name">1. Dilim</span><span class="time-range">09:30 – 10:30</span></td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+            </tr>
+            <tr class="cumartesi-row-alt">
+                <td class="time-cell slot"><div class="time-icon">☀️</div><span class="time-name">2. Dilim</span><span class="time-range">10:30 – 12:00</span></td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+            </tr>
+            <tr class="cumartesi-row">
+                <td class="time-cell slot"><div class="time-icon">🌤️</div><span class="time-name">3. Dilim</span><span class="time-range">12:00 – 13:00</span></td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+            </tr>
+            <tr class="cumartesi-row-alt">
+                <td class="time-cell slot"><div class="time-icon">🌇</div><span class="time-name">4. Dilim</span><span class="time-range">13:30 – 15:00</span></td>
+                <td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td><td class="empty">—</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+
+    <footer>Gönüllü isimleri WhatsApp bağlantısı içerir &nbsp;·&nbsp; Notlar bu cihazda saklanır</footer>
+
+</div><!-- /main -->
+
+<!-- ══ NOTES SIDEBAR ══ -->
+<div class="notes-sidebar">
+    <div class="notes-card">
+        <div class="notes-header">
+            <div class="notes-header-left">
+                <div class="notes-icon">📝</div>
+                <span class="notes-title">Notlarım</span>
+            </div>
+            <span class="notes-count" id="notesCount">0</span>
+        </div>
+        <div class="notes-list" id="notesList">
+            <div class="notes-empty" id="notesEmpty">
+                <span class="notes-empty-icon">🗒️</span>
+                Henüz not eklemediniz
+            </div>
+        </div>
+        <div class="notes-input-area">
+            <textarea class="notes-textarea" id="noteInput" placeholder="Yeni not ekle… (Ctrl+Enter)" maxlength="300" rows="3"></textarea>
+            <div class="notes-actions">
+                <span class="notes-char"><span id="charCount">0</span> / 300</span>
+                <button class="btn-add" id="btnAdd" disabled onclick="addNote()">Ekle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div><!-- /layout -->
+
+<script>
+    const STORAGE_KEY = 'gonullu_notlar_v1';
+    function getNotes() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; } }
+    function saveNotes(n) { localStorage.setItem(STORAGE_KEY, JSON.stringify(n)); }
+    function formatDate(ts) {
+        const d = new Date(ts);
+        return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+    }
+    function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function renderNotes() {
+        const notes = getNotes();
+        const list = document.getElementById('notesList');
+        const empty = document.getElementById('notesEmpty');
+        document.getElementById('notesCount').textContent = notes.length;
+        list.querySelectorAll('.note-item').forEach(el => el.remove());
+        if (notes.length === 0) { empty.style.display = ''; return; }
+        empty.style.display = 'none';
+        notes.slice().reverse().forEach(note => {
+            const div = document.createElement('div');
+            div.className = 'note-item';
+            div.innerHTML = `<div class="note-item-top"><span class="note-date">${formatDate(note.ts)}</span><button class="note-delete" onclick="deleteNote(${note.ts})" title="Sil">✕</button></div><div class="note-text">${escHtml(note.text)}</div>`;
+            list.appendChild(div);
+        });
+    }
+
+    function addNote() {
+        const input = document.getElementById('noteInput');
+        const text = input.value.trim();
+        if (!text) return;
+        const notes = getNotes();
+        notes.push({ ts: Date.now(), text });
+        saveNotes(notes);
+        input.value = '';
+        document.getElementById('charCount').textContent = '0';
+        document.getElementById('btnAdd').disabled = true;
+        renderNotes();
+    }
+
+    function deleteNote(ts) { saveNotes(getNotes().filter(n => n.ts !== ts)); renderNotes(); }
+
+    document.getElementById('noteInput').addEventListener('input', function() {
+        document.getElementById('charCount').textContent = this.value.length;
+        document.getElementById('btnAdd').disabled = this.value.trim().length === 0;
+    });
+    document.getElementById('noteInput').addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') addNote();
+    });
+
+    renderNotes();
+</script>
+</body>
+</html>
