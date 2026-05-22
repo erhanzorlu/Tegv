@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3. Sınıf İngilizce Ünite Düelloları</title>
+    
+    <!-- Çocuklar için sevimli ve okunaklı Fredoka yazı tipi -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Konfeti Efekti CDN Kütüphanesi -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: radial-gradient(circle, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        /* Arka plan hareketli desen efekti */
+        .pattern-bg {
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Buton kabarma ve basılma efektleri */
+        .btn-bounce {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-bounce:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .btn-bounce:active {
+            transform: translateY(-1px);
+        }
+
+        /* Düello VS badge animasyonu */
+        .vs-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Puan eklenme animasyonu */
+        .point-float {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: floatUp 1s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translate(-50%, 15px) scale(0.5); }
+            30% { opacity: 1; transform: translate(-50%, -10px) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -40px) scale(0.8); }
+        }
+
+        /* Özel Modal Animasyonu */
+        .modal-scale {
+            animation: modalScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes modalScaleUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Özel Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="pattern-bg min-h-screen flex items-center justify-center p-4 md:p-8 selection:bg-indigo-200">
+
+    <div class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl border-4 border-slate-200 p-6 md:p-10 relative overflow-hidden">
+        
+        <!-- Süsleyici Üst Renk Şeridi -->
+        <div class="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-blue-400 via-pink-400 to-yellow-400"></div>
+
+        <!-- 1. GİRİŞ EKRANI (KURULUM) -->
+        <div id="setup-screen" class="space-y-8">
+            <div class="text-center">
+                <span class="inline-block px-4 py-1.5 bg-yellow-100 text-yellow-800 rounded-full text-sm font-bold tracking-wider mb-2">🎓 3. SINIF İNGİLİZCE ÜNİTE DÜELLOLARI</span>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight">Sınıf Yarışma Dünyası</h1>
+                <p class="text-slate-500 mt-2 text-base md:text-lg">Projeksiyona özel, her üniteden önce öğrenme ekranlı adil düello platformu</p>
+            </div>
+
+            <!-- Yarım Kalan Oyunu Kurtarma Alanı -->
+            <div id="recovery-box" class="hidden bg-amber-50 border-2 border-dashed border-amber-300 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-left">
+                    <h3 class="font-bold text-amber-800 text-lg">⚠️ Yarım Kalan Oyun Bulundu!</h3>
+                    <p class="text-amber-700 text-sm">Tarayıcıda en son oynanan aktif turnuvanın verileri güvenle saklandı.</p>
+                </div>
+                <button onclick="resumeSavedGame()" class="py-3 px-6 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold btn-bounce shadow-md">
+                    🔄 Oyunu Kurtar ve Devam Et!
+                </button>
+            </div>
+
+            <!-- Öğrenci İsim Giriş Alanı -->
+            <div class="space-y-3 bg-slate-50 p-6 rounded-2xl border-2 border-slate-200">
+                <label for="player-inputs" class="block font-bold text-lg text-slate-700 flex items-center gap-2">
+                    👥 Yarışacak Öğrencilerin İsimleri:
+                </label>
+                <p class="text-sm text-slate-500">Öğrencilerin isimlerini aralarına virgül koyarak yazın.</p>
+                <textarea id="player-inputs" 
+                          class="w-full h-28 p-4 text-base md:text-lg rounded-xl border-2 border-slate-300 focus:border-indigo-500 focus:ring focus:ring-indigo-100 outline-none transition-all resize-none font-medium" 
+                          placeholder="Örn: Kuzey, Melis, Rüzgar, Derin, Ada, Kaan, Zeynep, Poyraz, Selin"></textarea>
+                <button onclick="startGame()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold text-xl shadow-lg shadow-emerald-100 btn-bounce flex items-center justify-center gap-3">
+                    🚀 Turnuvayı ve İlk Üniteyi Başlat!
+                </button>
+            </div>
+            
+            <div class="bg-indigo-50 p-5 rounded-2xl border-2 border-indigo-100 text-center">
+                <p class="text-sm text-indigo-900 font-semibold">💡 Daire (Round-Robin) Yöntemi ile herkes herkesle tam olarak 1 kez yarışır. Her maçtan önce o ünitenin kelimeleri gösterilir. Hiç kimse arka arkaya oynamaz!</p>
+            </div>
+        </div>
+
+        <!-- 2. KELİME HATIRLAMA / ÖĞRENME EKRANI -->
+        <div id="review-screen" class="hidden space-y-6">
+            <div class="text-center space-y-2">
+                <span id="review-unit-badge" class="inline-block px-4 py-1.5 bg-indigo-100 text-indigo-800 rounded-full text-sm font-bold tracking-wider">ÜNİTE HAZIRLIK</span>
+                <h1 id="review-unit-title" class="text-3xl md:text-4xl font-extrabold text-slate-800">Hayvanlar Ünitesi Kelimeleri</h1>
+                <p class="text-slate-500 text-sm md:text-base">Düello başlamadan önce kelimeleri yüksek sesle tekrar edelim! Soru işaretleri kalksın!</p>
+            </div>
+
+            <!-- Kelime Kartları Izgarası -->
+            <div id="vocab-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-200">
+                <!-- Dinamik olarak JS tarafından doldurulacak -->
+            </div>
+
+            <!-- Bu Turda Yarışacak Kişiler Bilgisi -->
+            <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 text-center">
+                <p class="font-bold text-slate-700 text-base md:text-lg">
+                    ⚔️ Bu Ünitede Yarışacak Düellocular:
+                </p>
+                <div class="flex justify-center items-center gap-6 mt-2">
+                    <span id="review-p1" class="text-xl font-black text-blue-600">Öğrenci 1</span>
+                    <span class="text-slate-400 font-bold">VS</span>
+                    <span id="review-p2" class="text-xl font-black text-amber-600">Öğrenci 2</span>
+                </div>
+            </div>
+
+            <button onclick="startDuelAfterReview()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-xl shadow-lg btn-bounce flex items-center justify-center gap-3">
+                🎮 Kelimeleri Öğrendik, Düelloyu Başlat! ⚡
+            </button>
+        </div>
+
+        <!-- 3. OYUN ALANI EKRANI (DÜELLO) -->
+        <div id="game-screen" class="hidden space-y-6">
+            
+            <!-- Tur ve Soru Göstergesi -->
+            <div class="flex justify-between items-center bg-slate-100 px-6 py-3 rounded-2xl border border-slate-200">
+                <div class="text-slate-600 font-bold text-sm md:text-base flex items-center gap-2">
+                    🏆 <span id="current-round-title">Tur 1 | Ünite: Hayvanlar</span>
+                </div>
+                <div class="bg-indigo-600 text-white px-4 py-1.5 rounded-full font-bold text-sm tracking-wide shadow-sm" id="round-question-progress">
+                    Soru 1 / 5
+                </div>
+            </div>
+
+            <!-- Düello Arenası (Oyuncu Kartları) -->
+            <div class="grid grid-cols-1 md:grid-cols-7 gap-4 items-center bg-gradient-to-r from-blue-50 to-orange-50 p-6 rounded-3xl border-2 border-slate-100 relative">
+                
+                <!-- Sol Yarışmacı -->
+                <div id="p1-card" class="md:col-span-3 bg-white p-6 rounded-2xl border-4 border-blue-400 shadow-md text-center relative transition-all duration-300">
+                    <span class="absolute top-2 left-2 text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded">Sol Taraf (A veya 1 Tuşu)</span>
+                    <h2 id="p1-name" class="text-2xl md:text-3xl font-extrabold text-slate-800 truncate mb-1">Oyuncu 1</h2>
+                    <p class="text-sm text-slate-400 font-semibold mb-3">Toplam Skor</p>
+                    <div class="text-3xl font-black text-blue-600"><span id="p1-score">0</span> Puan</div>
+                </div>
+
+                <!-- VS Bölümü -->
+                <div class="md:col-span-1 flex justify-center py-2">
+                    <div class="vs-pulse w-14 h-14 bg-red-500 rounded-full flex items-center justify-center text-white font-extrabold text-xl shadow-lg border-2 border-white">
+                        VS
+                    </div>
+                </div>
+
+                <!-- Sağ Yarışmacı -->
+                <div id="p2-card" class="md:col-span-3 bg-white p-6 rounded-2xl border-4 border-amber-400 shadow-md text-center relative transition-all duration-300">
+                    <span class="absolute top-2 right-2 text-xs font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded">Sağ Taraf (L veya 2 Tuşu)</span>
+                    <h2 id="p2-name" class="text-2xl md:text-3xl font-extrabold text-slate-800 truncate mb-1">Oyuncu 2</h2>
+                    <p class="text-sm text-slate-400 font-semibold mb-3">Toplam Skor</p>
+                    <div class="text-3xl font-black text-amber-600"><span id="p2-score">0</span> Puan</div>
+                </div>
+
+            </div>
+
+            <!-- Soru Alanı ve Zaman Sayacı -->
+            <div class="bg-amber-50 rounded-3xl border-4 border-dashed border-amber-300 p-8 relative overflow-hidden shadow-inner text-center space-y-4">
+                <!-- Zaman Barı -->
+                <div class="absolute top-0 left-0 w-full h-2.5 bg-slate-200">
+                    <div id="timer-bar" class="h-full bg-emerald-500 transition-all duration-1000 w-full"></div>
+                </div>
+
+                <div class="pt-2">
+                    <span id="question-unit-tag" class="px-3 py-1 bg-amber-100 text-amber-800 font-bold text-xs rounded-full tracking-wider">HAYVANLAR</span>
+                </div>
+                
+                <h1 id="question-text" class="text-3xl md:text-4xl font-extrabold text-slate-800 leading-snug max-w-2xl mx-auto">Soru hazırlanıyor...</h1>
+                
+                <!-- Cevap Önizleme Kutusu -->
+                <div id="answer-preview" class="hidden inline-block bg-emerald-100 text-emerald-800 font-bold text-xl md:text-2xl px-6 py-3 rounded-2xl border-2 border-emerald-200 scale-in shadow-sm">
+                    Cevap: <span class="font-black"></span>
+                </div>
+
+                <div class="pt-2">
+                    <button id="show-answer-btn" onclick="toggleAnswer()" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold text-sm btn-bounce">
+                        👁️ Doğru Cevabı Göster [C Tuşu]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Öğretmen Yönetim Butonları -->
+            <div class="bg-slate-100 p-5 rounded-2xl border-2 border-slate-200 text-center space-y-4">
+                <p class="font-bold text-slate-600 flex items-center justify-center gap-2 text-sm md:text-base">
+                    🛠️ Hakem (Öğretmen) Karar Butonları <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-normal">Klavye Kısayolları Aktif!</span>
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <button onclick="awardPoint(1)" class="py-3.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl text-base btn-bounce shadow-md">
+                        👈 Sol Bildi [A / 1]
+                    </button>
+                    <button id="pause-btn" onclick="toggleTimer()" class="py-3.5 bg-yellow-400 hover:bg-yellow-500 text-slate-800 font-bold rounded-xl text-sm btn-bounce shadow-md">
+                        ⏸️ Duraklat [Boşluk]
+                    </button>
+                    <button onclick="skipQuestion()" class="py-3.5 bg-slate-500 hover:bg-slate-600 text-white font-bold rounded-xl text-sm btn-bounce shadow-md">
+                        Pas Geç [P] ⏭️
+                    </button>
+                    <button onclick="awardPoint(2)" class="py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-base btn-bounce shadow-md">
+                        Sağ Bildi [L / 2] 👉
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sınıf Genel Puan Tablosu -->
+            <div class="bg-white p-6 rounded-2xl border-2 border-slate-200">
+                <h3 class="text-xl font-extrabold text-slate-700 mb-4 flex items-center gap-2">🏆 Sınıf Genel Puan Tablosu</h3>
+                <div class="max-h-60 overflow-y-auto border border-slate-100 rounded-xl">
+                    <table class="w-full text-left text-sm font-medium">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider sticky top-0">
+                            <tr>
+                                <th class="p-4">Sıra</th>
+                                <th class="p-4">İsim</th>
+                                <th class="p-4">Puan</th>
+                                <th class="p-4">Oynadığı Tur Sayısı</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body" class="divide-y divide-slate-100">
+                            <!-- JS ile doldurulacak -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                    <button onclick="confirmEndGame()" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl btn-bounce shadow-md">
+                        🏁 Turnuvayı Sonlandır ve Kazananı Seç!
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ÖZEL MODAL BİLEŞENLERİ (Uyarısız, çocuk dostu ve animasyonlu) -->
+    
+    <!-- 1. Tur Bitti (Round Completed) Modalı -->
+    <div id="round-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full text-center space-y-6 shadow-2xl border-4 border-indigo-400 modal-scale">
+            <div class="text-6xl">🔔</div>
+            <div class="space-y-2">
+                <h2 class="text-3xl font-black text-slate-800">Maç Tamamlandı!</h2>
+                <p class="text-slate-500 text-sm">Bu düello bitti. Alınan puanlar sınıf listesine eklendi.</p>
+            </div>
+            
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left space-y-2">
+                <div class="font-bold text-slate-700 text-sm mb-1">Düello Sonuçları:</div>
+                <div class="flex justify-between font-bold text-blue-600 text-base" id="round-p1-result">
+                    <span>Oyuncu 1:</span> <span class="font-black">0 Puan</span>
+                </div>
+                <div class="flex justify-between font-bold text-amber-600 text-base" id="round-p2-result">
+                    <span>Oyuncu 2:</span> <span class="font-black">0 Puan</span>
+                </div>
+            </div>
+
+            <button onclick="closeRoundModalAndProceed()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-lg rounded-2xl shadow-lg shadow-indigo-100 btn-bounce">
+                Sıradaki Maça Geç 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Sınıf Şampiyonu Modalı -->
+    <div id="champion-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-8 max-w-lg w-full text-center space-y-6 shadow-2xl border-4 border-yellow-400 modal-scale overflow-hidden relative">
+            <div class="absolute top-0 left-0 right-0 h-2 bg-yellow-400"></div>
+            <div class="text-7xl animate-bounce">🏆</div>
+            <div class="space-y-2">
+                <h2 class="text-4xl font-black text-slate-800">Sınıf Şampiyonu!</h2>
+                <p class="text-slate-500 font-semibold text-lg">Büyük turnuva sona erdi!</p>
+            </div>
+
+            <!-- Şampiyon Adı -->
+            <div class="py-4 bg-yellow-50 rounded-2xl border-2 border-yellow-200 my-4">
+                <div id="champion-name" class="text-3xl font-black text-yellow-800">Zeynep</div>
+                <div id="champion-score" class="text-lg font-bold text-yellow-600 mt-1">Skor: 45 Puan!</div>
+            </div>
+
+            <!-- İlk 3 Listesi -->
+            <div class="text-left space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                <div class="font-bold text-slate-600 text-sm border-b pb-2 mb-2">⭐ Kürsü Dereceleri:</div>
+                <div id="podium-list" class="space-y-1.5 font-bold text-slate-700">
+                    <!-- JS ile doldurulacak -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="restartWholeGame()" class="py-3.5 bg-slate-600 hover:bg-slate-700 text-white font-bold rounded-xl text-sm btn-bounce">
+                    🔄 Yeniden Başlat
+                </button>
+                <button onclick="closeChampionModalOnly()" class="py-3.5 bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-extrabold rounded-xl text-sm btn-bounce">
+                    Kapat, Tabloyu Gör
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Genel Uyarı Mesajı (Custom Notification Modal) -->
+    <div id="alert-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-xl border-2 border-slate-200 modal-scale">
+            <div class="text-4xl" id="alert-icon">⚠️</div>
+            <h3 class="text-xl font-bold text-slate-800" id="alert-title">Uyarı</h3>
+            <p class="text-slate-500 text-sm" id="alert-message">Lütfen gerekli alanları doldurunuz.</p>
+            <button onclick="closeAlert()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm btn-bounce">
+                Tamam
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. Turnuva Bitirme Kararı Doğrulama Modalı -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-xl border-2 border-slate-200 modal-scale">
+            <div class="text-4xl">🛑</div>
+            <h3 class="text-xl font-bold text-slate-800">Yarışmayı Bitir?</h3>
+            <p class="text-slate-500 text-sm">Turnuvayı şimdi bitirip sınıf şampiyonunu açıklamak istediğinizden emin misiniz?</p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeConfirm()" class="py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-sm btn-bounce">
+                    Vazgeç
+                </button>
+                <button onclick="endGame()" class="py-2.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl text-sm btn-bounce">
+                    Evet, Bitir 🏆
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 📚 3. SINIF İNGİLİZCE ÜNİTE VERİ HAVUZU
+        // ==========================================
+        const units = {
+            animals: {
+                id: "animals",
+                title: "1. Hayvanlar (Animals)",
+                vocab: [
+                    { en: "Dog", tr: "Köpek" },
+                    { en: "Cat", tr: "Kedi" },
+                    { en: "Bird", tr: "Kuş" },
+                    { en: "Rabbit", tr: "Tavşan" },
+                    { en: "Frog", tr: "Kurbağa" },
+                    { en: "Elephant", tr: "Fil" },
+                    { en: "Monkey", tr: "Maymun" },
+                    // Yeni eklenen kelimeler
+                    { en: "Lion", tr: "Aslan" },
+                    { en: "Tiger", tr: "Kaplan" },
+                    { en: "Bear", tr: "Ayı" },
+                    { en: "Fox", tr: "Tilki" },
+                    { en: "Turtle", tr: "Kaplumbağa" },
+                    { en: "Horse", tr: "At" },
+                    { en: "Cow", tr: "Inek" },
+                    { en: "Sheep", tr: "Koyun" },
+                    { en: "Duck", tr: "Ördek" },
+                    { en: "Fish", tr: "Balık" }
+                    // ,{ en: "EnglishWord", tr: "TürkçeKarşılığı" }
+                ],
+                questions: [
+                    { text: "Türkçede 'Dog' ne demek?", answer: "Köpek" },
+                    { text: "İngilizcede 'Kedi' nasıl denir?", answer: "Cat" },
+                    { text: "Türkçede 'Elephant' ne demek?", answer: "Fil" },
+                    { text: "İngilizcede 'Kurbağa' nasıl denir?", answer: "Frog" },
+                    { text: "Türkçede 'Bird' ne demek?", answer: "Kuş" },
+                    // İlk listeden eksik kalanların soruları
+                    { text: "Türkçede 'Rabbit' ne demek?", answer: "Tavşan" },
+                    { text: "İngilizcede 'Maymun' nasıl denir?", answer: "Monkey" },
+                    // Yeni eklenen kelimelerin soruları
+                    { text: "Türkçede 'Lion' ne demek?", answer: "Aslan" },
+                    { text: "İngilizcede 'Kaplan' nasıl denir?", answer: "Tiger" },
+                    { text: "Türkçede 'Bear' ne demek?", answer: "Ayı" },
+                    { text: "İngilizcede 'Tilki' nasıl denir?", answer: "Fox" },
+                    { text: "Türkçede 'Turtle' ne demek?", answer: "Kaplumbağa" },
+                    { text: "İngilizcede 'At' nasıl denir?", answer: "Horse" },
+                    { text: "Türkçede 'Cow' ne demek?", answer: "Inek" },
+                    { text: "İngilizcede 'Koyun' nasıl denir?", answer: "Sheep" },
+                    { text: "Türkçede 'Duck' ne demek?", answer: "Ördek" },
+                    { text: "İngilizcede 'Balık' nasıl denir?", answer: "Fish" }
+                    // ,{ text: "Soru metni buraya", answer: "Doğru Cevap" }
+                ]
+            },
+            myFamily: {
+                id: "myFamily",
+                title: "2. My Family (Benim Ailem)",
+                vocab: [
+                    { en: "Mother", tr: "Anne" },
+                    { en: "Father", tr: "Baba" },
+                    { en: "Brother", tr: "Erkek Kardeş / Abi" },
+                    { en: "Sister", tr: "Kız Kardeş / Abla" },
+                    { en: "Grandmother", tr: "Büyükanne" },
+                    { en: "Grandfather", tr: "Büyükbaba" },
+                    { en: "Baby", tr: "Bebek" },
+                    // Yeni eklenen aile üyeleri
+                    { en: "Uncle", tr: "Amca / Dayı" },
+                    { en: "Aunt", tr: "Hala / Teyze" },
+                    { en: "Cousin", tr: "Kuzen" },
+                    { en: "Son", tr: "Erkek Evlat" },
+                    { en: "Daughter", tr: "Kız Evlat" }
+                    // ,{ en: "EnglishWord", tr: "TürkçeKarşılığı" }
+                ],
+                questions: [
+                    { text: "Türkçede 'Mother' ne demek?", answer: "Anne" },
+                    { text: "İngilizcede 'Baba' nasıl denir?", answer: "Father" },
+                    { text: "Türkçede 'Grandmother' ne demek?", answer: "Büyükanne (Anneanne/Babaanne)" },
+                    { text: "İngilizcede 'Bebek' nasıl denir?", answer: "Baby" },
+                    { text: "Türkçede 'Sister' ne demek?", answer: "Kız Kardeş / Abla" },
+                    // İlk listeden eksik kalanların soruları
+                    { text: "İngilizcede 'Erkek Kardeş / Abi' nasıl denir?", answer: "Brother" },
+                    { text: "Türkçede 'Grandfather' ne demek?", answer: "Büyükbaba" },
+                    // Yeni eklenen kelimelerin soruları
+                    { text: "Türkçede 'Uncle' ne demek?", answer: "Amca / Dayı" },
+                    { text: "İngilizcede 'Hala / Teyze' nasıl denir?", answer: "Aunt" },
+                    { text: "Türkçede 'Cousin' ne demek?", answer: "Kuzen" },
+                    { text: "İngilizcede 'Erkek Evlat' nasıl denir?", answer: "Son" },
+                    { text: "Türkçede 'Daughter' ne demek?", answer: "Kız Evlat" }
+                    // ,{ text: "Soru metni buraya", answer: "Doğru Cevap" }
+                ]
+            },
+            peopleILove: {
+                id: "peopleILove",
+                title: "3. People I Love (Sevdiğim İnsanlar)",
+                vocab: [
+                    { en: "Friend", tr: "Arkadaş" },
+                    { en: "Teacher", tr: "Öğretmen" },
+                    { en: "Doctor", tr: "Doktor" },
+                    { en: "Pilot", tr: "Pilot" },
+                    { en: "Singer", tr: "Şarkıcı" },
+                    { en: "Chef", tr: "Aşçı" },
+                    // Yeni eklenen sevilen kişiler ve meslekler
+                    { en: "Astronaut", tr: "Astronot" },
+                    { en: "Firefighter", tr: "İtfaiyeci" },
+                    { en: "Police Officer", tr: "Polis Memuru" },
+                    { en: "Farmer", tr: "Çiftçi" },
+                    { en: "Vet", tr: "Veteriner" },
+                    { en: "Driver", tr: "Sürücü / Şoför" }
+                    // ,{ en: "EnglishWord", tr: "TürkçeKarşılığı" }
+                ],
+                questions: [
+                    { text: "İngilizcede 'Öğretmen' nasıl denir?", answer: "Teacher" },
+                    { text: "Türkçede 'Friend' ne demek?", answer: "Arkadaş" },
+                    { text: "İngilizcede 'Aşçı' nasıl denir?", answer: "Chef" },
+                    { text: "Türkçede 'Singer' ne demek?", answer: "Şarkıcı" },
+                    { text: "İngilizcede 'Doktor' nasıl denir?", answer: "Doctor" },
+                    // İlk listeden eksik kalanların soruları
+                    { text: "Türkçede 'Pilot' ne demek?", answer: "Pilot" },
+                    // Yeni eklenen kelimelerin soruları
+                    { text: "İngilizcede 'Astronot' nasıl denir?", answer: "Astronaut" },
+                    { text: "Türkçede 'Firefighter' ne demek?", answer: "İtfaiyeci" },
+                    { text: "İngilizcede 'Polis Memuru' nasıl denir?", answer: "Police Officer" },
+                    { text: "Türkçede 'Farmer' ne demek?", answer: "Çiftçi" },
+                    { text: "İngilizcede 'Veteriner' nasıl denir?", answer: "Vet" },
+                    { text: "Türkçede 'Driver' ne demek?", answer: "Sürücü / Şoför" }
+                    // ,{ text: "Soru metni buraya", answer: "Doğru Cevap" }
+                ]
+            },
+            feelings: {
+                id: "feelings",
+                title: "4. Feelings (Duygularımız)",
+                vocab: [
+                    { en: "Happy", tr: "Mutlu" },
+                    { en: "Sad", tr: "Üzgün" },
+                    { en: "Angry", tr: "Kızgın / Öfkeli" },
+                    { en: "Tired", tr: "Yorgun" },
+                    { en: "Surprised", tr: "Şaşırmış" },
+                    { en: "Hungry", tr: "Aç" },
+                    { en: "Scared", tr: "Korkmuş" },
+                    // Yeni eklenen duygular
+                    { en: "Thirsty", tr: "Susamış" },
+                    { en: "Sleepy", tr: "Uykulu" },
+                    { en: "Bored", tr: "Sıkılmış" },
+                    { en: "Excited", tr: "Heyecanlı" },
+                    { en: "Sick", tr: "Hasta" },
+                    { en: "Shy", tr: "Utangaç" }
+                    // ,{ en: "EnglishWord", tr: "TürkçeKarşılığı" }
+                ],
+                questions: [
+                    { text: "Türkçede 'Happy' ne demek?", answer: "Mutlu" },
+                    { text: "İngilizcede 'Üzgün' nasıl denir?", answer: "Sad" },
+                    { text: "Türkçede 'Tired' ne demek?", answer: "Yorgun" },
+                    { text: "İngilizcede 'Korkmuş' nasıl denir?", answer: "Scared" },
+                    { text: "Türkçede 'Surprised' ne demek?", answer: "Şaşırmış" },
+                    // İlk listeden eksik kalanların soruları
+                    { text: "İngilizcede 'Kızgın / Öfkeli' nasıl denir?", answer: "Angry" },
+                    { text: "Türkçede 'Hungry' ne demek?", answer: "Aç" },
+                    // Yeni eklenen kelimelerin soruları
+                    { text: "İngilizcede 'Susamış' nasıl denir?", answer: "Thirsty" },
+                    { text: "Türkçede 'Sleepy' ne demek?", answer: "Uykulu" },
+                    { text: "İngilizcede 'Sıkılmış' nasıl denir?", answer: "Bored" },
+                    { text: "Türkçede 'Excited' ne demek?", answer: "Heyecanlı" },
+                    { text: "İngilizcede 'Hasta' nasıl denir?", answer: "Sick" },
+                    { text: "Türkçede 'Utangaç' ne demek?", answer: "Shy" }
+                    // ,{ text: "Soru metni buraya", answer: "Doğru Cevap" }
+                ]
+            },
+            toysAndGames: {
+                id: "toysAndGames",
+                title: "5. Toys and Games (Oyuncaklar ve Oyunlar)",
+                vocab: [
+                    { en: "Ball", tr: "Top" },
+                    { en: "Doll", tr: "Oyuncak Bebek" },
+                    { en: "Kite", tr: "Uçurtma" },
+                    { en: "Blocks", tr: "Bloklar / Yapboz" },
+                    { en: "Teddy Bear", tr: "Oyuncak Ayı" },
+                    { en: "Computer Game", tr: "Bilgisayar Oyunu" },
+                    { en: "Chess", tr: "Satranç" },
+                    // Yeni eklenen oyuncak ve oyunlar
+                    { en: "Toy Car", tr: "Oyuncak Araba" },
+                    { en: "Train Set", tr: "Oyuncak Tren Seti" },
+                    { en: "Puzzle", tr: "Yapboz / Bulmaca" },
+                    { en: "Balloon", tr: "Balon" },
+                    { en: "Robot", tr: "Robot" },
+                    { en: "Board Game", tr: "Masa Oyunu" },
+                    { en: "Bike", tr: "Bisiklet" }
+                    // ,{ en: "EnglishWord", tr: "TürkçeKarşılığı" }
+                ],
+                questions: [
+                    { text: "Türkçede 'Kite' ne demek?", answer: "Uçurtma" },
+                    { text: "İngilizcede 'Oyuncak Bebek' nasıl denir?", answer: "Doll" },
+                    { text: "Türkçede 'Teddy Bear' ne demek?", answer: "Oyuncak Ayı" },
+                    { text: "İngilizcede 'Satranç' nasıl denir?", answer: "Chess" },
+                    { text: "Türkçede 'Ball' ne demek?", answer: "Top" },
+                    // İlk listeden eksik kalanların soruları
+                    { text: "İngilizcede 'Bloklar / Yapboz' nasıl denir?", answer: "Blocks" },
+                    { text: "Türkçede 'Computer Game' ne demek?", answer: "Bilgisayar Oyunu" },
+                    // Yeni eklenen kelimelerin soruları
+                    { text: "İngilizcede 'Oyuncak Araba' nasıl denir?", answer: "Toy Car" },
+                    { text: "Türkçede 'Train Set' ne demek?", answer: "Oyuncak Tren Seti" },
+                    { text: "İngilizcede 'Yapboz / Bulmaca' nasıl denir?", answer: "Puzzle" },
+                    { text: "Türkçede 'Balloon' ne demek?", answer: "Balon" },
+                    { text: "İngilizcede 'Robot' nasıl denir?", answer: "Robot" },
+                    { text: "Türkçede 'Masa Oyunu' ne demek?", answer: "Board Game" },
+                    { text: "İngilizcede 'Bisiklet' nasıl denir?", answer: "Bike" }
+                    // ,{ text: "Soru metni buraya", answer: "Doğru Cevap" }
+                ]
+            }
+        };
+
+        // Turnuva Değişkenleri
+        let players = [];
+        let allMatches = [];       // Daire yöntemiyle üretilen tüm maç fikstürü [{p1Index, p2Index, unitKey}, ...]
+        let currentMatchIndex = 0; // Şu an kaçıncı maçtayız
+        
+        let currentPair = [];
+        let currentUnitQuestions = [];
+        let currentQuestionIndex = 0;
+
+        let QUESTIONS_PER_ROUND = 5;
+        let roundQuestionCount = 0;
+        let roundScores = [0, 0];
+
+        // Zamanlayıcı Değişkenleri
+        let timerInterval;
+        let timeLeft = 20;
+        const totalTime = 20;
+        let isTimerRunning = false;
+
+        // Çift tıklama ve aşırı hızlı buton basımlarını engelleme kilidi (Debounce Guard)
+        let isActionLocked = false;
+
+        // ==========================================
+        // 🔄 DAİRE (ROUND-ROBIN) FİKSTÜR ÜRETİCİSİ
+        // ==========================================
+        // Circle Method: 1 oyuncuyu sabit tut, diğerlerini saat yönünde kaydır.
+        // Her turda herkes tam 1 kez oynar. Toplam N-1 tur, her turda N/2 maç.
+        function generateRoundRobinMatches(playerCount) {
+            const matches = [];
+            const unitKeys = Object.keys(units);
+            let unitCounter = 0;
+
+            // Tek sayıda oyuncu varsa hayali bir "bay" (dinlenme) oyuncusu ekle
+            let n = playerCount;
+            const isOdd = n % 2 !== 0;
+            if (isOdd) n++;
+
+            // Oyuncu indekslerini oluştur (0, 1, 2, ..., n-1)
+            const indices = [];
+            for (let i = 0; i < n; i++) indices.push(i);
+
+            const totalRounds = n - 1;
+            const matchesPerRound = n / 2;
+
+            for (let round = 0; round < totalRounds; round++) {
+                for (let i = 0; i < matchesPerRound; i++) {
+                    const home = indices[i];
+                    const away = indices[n - 1 - i];
+
+                    // Hayali oyuncu (bay) ile eşleşen kişi bu turda dinlenir, maçı atla
+                    if (isOdd && (home >= playerCount || away >= playerCount)) {
+                        continue;
+                    }
+
+                    // Üniteleri sırayla dağıt (döngüsel)
+                    const unitKey = unitKeys[unitCounter % unitKeys.length];
+                    unitCounter++;
+
+                    matches.push({
+                        p1Index: home,
+                        p2Index: away,
+                        unitKey: unitKey
+                    });
+                }
+
+                // Daire kaydırma: İlk oyuncu (indices[0]) sabit kalır, diğerleri saat yönünde döner
+                const last = indices.pop();
+                indices.splice(1, 0, last);
+            }
+
+            return matches;
+        }
+
+        // ==========================================
+        // 🔊 WEB AUDIO API SES MOTORU (Dosyasız)
+        // ==========================================
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            // Tarayıcı suspended ise resume et (kullanıcı etkileşimi sonrası)
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // 🎵 Doğru Cevap Sesi - Mutlu "ding" melodisi
+        function playSuccessSound() {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+
+            // İlk nota (yükselen)
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(523, now);       // C5
+            osc1.frequency.setValueAtTime(659, now + 0.1); // E5
+            osc1.frequency.setValueAtTime(784, now + 0.2); // G5
+            gain1.gain.setValueAtTime(0.3, now);
+            gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            osc1.connect(gain1).connect(ctx.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.5);
+
+            // İkinci nota (parlak)
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(1047, now + 0.15); // C6
+            gain2.gain.setValueAtTime(0.2, now + 0.15);
+            gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+            osc2.connect(gain2).connect(ctx.destination);
+            osc2.start(now + 0.15);
+            osc2.stop(now + 0.6);
+        }
+
+        // ⏭️ Pas Geçme Sesi - Kısa "boop"
+        function playSkipSound() {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, now);
+            osc.frequency.exponentialRampToValueAtTime(200, now + 0.15);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        }
+
+        // ⏰ Tik-Tak Sesi - Son 5 saniye uyarısı
+        function playTickSound() {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(800, now);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.06);
+        }
+
+        // ⌛ Süre Doldu Sesi - Buzzer
+        function playBuzzerSound() {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, now);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.setValueAtTime(0.25, now + 0.3);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.8);
+        }
+
+        // 🔔 Maç Bitti Sesi - Bitiş zili
+        function playRoundEndSound() {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+
+            [0, 0.15, 0.3].forEach((delay, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, now + delay); // A5
+                gain.gain.setValueAtTime(0.2, now + delay);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.25);
+                osc.connect(gain).connect(ctx.destination);
+                osc.start(now + delay);
+                osc.stop(now + delay + 0.25);
+            });
+        }
+
+        // 🏆 Şampiyonluk Fanfarı - Zafer melodisi
+        function playFanfareSound() {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+
+            // Zafer melodisi notaları: C-E-G-C(yüksek)
+            const notes = [
+                { freq: 523, time: 0,    dur: 0.2 },   // C5
+                { freq: 659, time: 0.2,  dur: 0.2 },   // E5
+                { freq: 784, time: 0.4,  dur: 0.2 },   // G5
+                { freq: 1047, time: 0.6, dur: 0.5 },   // C6 (uzun)
+                { freq: 784, time: 1.2,  dur: 0.15 },  // G5
+                { freq: 1047, time: 1.4, dur: 0.8 },   // C6 (final, uzun)
+            ];
+
+            notes.forEach(note => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(note.freq, now + note.time);
+                gain.gain.setValueAtTime(0.25, now + note.time);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + note.time + note.dur);
+                osc.connect(gain).connect(ctx.destination);
+                osc.start(now + note.time);
+                osc.stop(now + note.time + note.dur);
+            });
+        }
+
+        // Sayfa Yüklendiğinde Kurtarma Noktasını Araştır
+        window.onload = function () {
+            checkRecoveryState();
+        }
+
+        // Kurtarma Durumunu Kontrol Et
+        function checkRecoveryState() {
+            const savedData = localStorage.getItem("duel_active_game_session");
+            if (savedData) {
+                document.getElementById("recovery-box").classList.remove("hidden");
+            } else {
+                document.getElementById("recovery-box").classList.add("hidden");
+            }
+        }
+
+        // Oyunu Kaydet (Local Storage'a Güncel State)
+        function saveGameState() {
+            const state = {
+                players: players,
+                allMatches: allMatches,
+                currentMatchIndex: currentMatchIndex,
+                currentPair: currentPair,
+                currentQuestionIndex: currentQuestionIndex,
+                roundQuestionCount: roundQuestionCount,
+                roundScores: roundScores,
+                QUESTIONS_PER_ROUND: QUESTIONS_PER_ROUND
+            };
+            localStorage.setItem("duel_active_game_session", JSON.stringify(state));
+        }
+
+        // Kayıtlı Oyunu Temizle (Oyun bittiğinde çağrılır)
+        function clearSavedGame() {
+            localStorage.removeItem("duel_active_game_session");
+            checkRecoveryState();
+        }
+
+        // Kaydedilen Oyunu Geri Yükle ve Çalıştır
+        function resumeSavedGame() {
+            const savedData = localStorage.getItem("duel_active_game_session");
+            if (!savedData) return;
+
+            try {
+                const state = JSON.parse(savedData);
+                players = state.players;
+                allMatches = state.allMatches;
+                currentMatchIndex = state.currentMatchIndex;
+                currentPair = state.currentPair;
+                currentQuestionIndex = state.currentQuestionIndex;
+                roundQuestionCount = state.roundQuestionCount;
+                roundScores = state.roundScores;
+                QUESTIONS_PER_ROUND = state.QUESTIONS_PER_ROUND;
+
+                document.getElementById("setup-screen").classList.add("hidden");
+                
+                // Oyuncu isim girdilerini korumak için (opsiyonel görsel detay)
+                document.getElementById("player-inputs").value = players.map(p => p.name).join(", ");
+
+                // Kaldığı yere göre doğru ekranı aç
+                const currentMatch = allMatches[currentMatchIndex];
+                const activeUnit = units[currentMatch.unitKey];
+                
+                // Kaldığı üniteden soruları yeniden kopyala (Eşleşme sabit kalır)
+                currentUnitQuestions = [...activeUnit.questions];
+                
+                document.getElementById("game-screen").classList.remove("hidden");
+                updateLeaderboard();
+                loadQuestionIntoUI();
+                
+                const kalan = allMatches.length - currentMatchIndex;
+                showCustomAlert("🔄", "Oyun Kurtarıldı", `Kaldığınız düellodan devam ediyorsunuz! Kalan maç: ${kalan}`);
+            } catch (err) {
+                showCustomAlert("❌", "Hata", "Oyun geri yüklenirken teknik bir aksaklık oldu.");
+                clearSavedGame();
+            }
+        }
+
+        // Oyunu Başlatma Kurulumu
+        function startGame() {
+            const rawInput = document.getElementById("player-inputs").value;
+            if (!rawInput.trim()) {
+                showCustomAlert("👥", "Hata", "Lütfen yarışacak öğrencilerin isimlerini girin.");
+                return;
+            }
+
+            const names = rawInput.split(",").map(name => name.trim()).filter(name => name !== "");
+            if (names.length < 2) {
+                showCustomAlert("👥", "Hata", "Düello yapabilmek için en az 2 öğrenci yazmalısınız!");
+                return;
+            }
+
+            // Uç Durum Çözümü: Aynı İsimli Öğrencileri Benzersiz Yapma (Duplicate Sanitization)
+            let seenNames = {};
+            players = names.map(name => {
+                if (!seenNames[name]) {
+                    seenNames[name] = 1;
+                    return { name: name, score: 0, matches: 0 };
+                } else {
+                    seenNames[name]++;
+                    return { name: `${name} (${seenNames[name]})`, score: 0, matches: 0 };
+                }
+            });
+
+            // Daire (Round-Robin) Yöntemiyle Tüm Fikstürü Üret
+            allMatches = generateRoundRobinMatches(players.length);
+            currentMatchIndex = 0;
+
+            const totalMatches = allMatches.length;
+            document.getElementById("setup-screen").classList.add("hidden");
+            
+            saveGameState();
+            prepareNextMatch();
+        }
+
+        // Sıradaki Maça Hazırlık (Kelime Çalışma Ekranı)
+        function prepareNextMatch() {
+            // Tüm maçlar bittiyse otomatik olarak turnuvayı bitir
+            if (currentMatchIndex >= allMatches.length) {
+                endGame();
+                return;
+            }
+
+            const currentMatch = allMatches[currentMatchIndex];
+            const activeUnit = units[currentMatch.unitKey];
+            if (!activeUnit) return;
+
+            // Daire yöntemiyle önceden belirlenmiş eşleşmeyi al
+            const p1 = players[currentMatch.p1Index];
+            const p2 = players[currentMatch.p2Index];
+            currentPair = [p1, p2];
+
+            // Kelime Öğrenme Ekranını Güncelle
+            const kalanMac = allMatches.length - currentMatchIndex;
+            document.getElementById("review-unit-badge").innerText = `MAÇ ${currentMatchIndex + 1} / ${allMatches.length}`;
+            document.getElementById("review-unit-title").innerText = `${activeUnit.title} Kelimeleri`;
+            
+            document.getElementById("review-p1").innerText = p1.name;
+            document.getElementById("review-p2").innerText = p2.name;
+
+            // Kelime Izgarasını Doldur
+            const grid = document.getElementById("vocab-grid");
+            grid.innerHTML = "";
+            activeUnit.vocab.forEach(v => {
+                const card = document.createElement("div");
+                card.className = "bg-white p-4 rounded-xl border border-slate-200 text-center shadow-xs space-y-1";
+                card.innerHTML = `
+                    <div class="text-indigo-600 font-extrabold text-lg md:text-xl">${v.en}</div>
+                    <div class="text-slate-500 font-semibold text-xs md:text-sm border-t pt-1 border-slate-100">${v.tr}</div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById("game-screen").classList.add("hidden");
+            document.getElementById("review-screen").classList.remove("hidden");
+            
+            saveGameState();
+        }
+
+        // Kelime İncelemesi Bittiğinde Düelloyu Başlatma
+        function startDuelAfterReview() {
+            document.getElementById("review-screen").classList.add("hidden");
+            document.getElementById("game-screen").classList.remove("hidden");
+
+            const currentMatch = allMatches[currentMatchIndex];
+            const activeUnit = units[currentMatch.unitKey];
+
+            // Bu üniteye ait soruları kopyala ve karıştır
+            currentUnitQuestions = [...activeUnit.questions];
+            shuffleArray(currentUnitQuestions);
+
+            // Uç Durum Çözümü: Ünitedeki soru sayısı 5'ten az ise limitleri güncelle
+            if (currentUnitQuestions.length < 5) {
+                QUESTIONS_PER_ROUND = currentUnitQuestions.length;
+            } else {
+                QUESTIONS_PER_ROUND = 5;
+            }
+
+            // Değişkenleri sıfırla
+            currentQuestionIndex = 0;
+            roundQuestionCount = 0;
+            roundScores = [0, 0];
+
+            saveGameState();
+            loadQuestionIntoUI();
+        }
+
+        // Soruyu Ekrana Basma
+        function loadQuestionIntoUI() {
+            if (currentQuestionIndex >= currentUnitQuestions.length || !currentUnitQuestions[currentQuestionIndex]) {
+                endCurrentRound();
+                return;
+            }
+
+            const currentMatch = allMatches[currentMatchIndex];
+            if (!currentMatch) {
+                endCurrentRound();
+                return;
+            }
+
+            const activeUnit = units[currentMatch.unitKey];
+            if (!activeUnit) {
+                endCurrentRound();
+                return;
+            }
+
+            // Üst kısımdaki tur bilgilerini yazdır
+            document.getElementById("current-round-title").innerText = `Maç ${currentMatchIndex + 1}/${allMatches.length} | ${activeUnit.title}`;
+            document.getElementById("round-question-progress").innerText = `Soru ${roundQuestionCount + 1} / ${QUESTIONS_PER_ROUND}`;
+
+            // Eşleşenlerin İsimleri ve Toplam Skorlarını Yazdır
+            document.getElementById("p1-name").innerText = currentPair[0].name;
+            document.getElementById("p1-score").innerText = currentPair[0].score;
+            document.getElementById("p2-name").innerText = currentPair[1].name;
+            document.getElementById("p2-score").innerText = currentPair[1].score;
+
+            // Soruyu ekrana bas
+            document.getElementById("question-unit-tag").innerText = activeUnit.title.toUpperCase();
+            document.getElementById("question-text").innerText = currentUnitQuestions[currentQuestionIndex].text;
+            
+            // Doğru cevabı arkada gizle
+            document.getElementById("answer-preview").classList.add("hidden");
+            document.getElementById("answer-preview").querySelector("span").innerText = currentUnitQuestions[currentQuestionIndex].answer;
+
+            resetTimer();
+            startTimer();
+        }
+
+        // Zamanlayıcıyı Başlatma
+        function startTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = true;
+            document.getElementById("pause-btn").innerText = "⏸️ Sayacı Duraklat";
+            
+            const timerBar = document.getElementById("timer-bar");
+            timerBar.style.backgroundColor = "#10b981"; // Emerald-500
+
+            timerInterval = setInterval(() => {
+                if (isTimerRunning) {
+                    timeLeft--;
+                    let percentage = (timeLeft / totalTime) * 100;
+                    timerBar.style.width = percentage + "%";
+
+                    if (timeLeft <= 5 && timeLeft > 0) {
+                        timerBar.style.backgroundColor = "#ef4444"; // Red-500
+                        playTickSound(); // ⏰ Tik-tak sesi
+                    }
+
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        timerBar.style.width = "0%";
+                        playBuzzerSound(); // ⌛ Buzzer sesi
+                        document.getElementById("question-text").innerHTML = "⌛ Süre Doldu! <br><span class='text-lg font-bold text-red-500'>Sürede cevap gelmedi. Lütfen sonraki soruya geçin.</span>";
+                    }
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = totalTime;
+            document.getElementById("timer-bar").style.width = "100%";
+        }
+
+        function toggleTimer() {
+            isTimerRunning = !isTimerRunning;
+            const btn = document.getElementById("pause-btn");
+            if (isTimerRunning) {
+                btn.innerText = "⏸️ Sayacı Duraklat";
+            } else {
+                btn.innerText = "▶️ Sayacı Başlat";
+            }
+        }
+
+        // Puan Verme Fonksiyonu
+        function awardPoint(playerSide) {
+            // Çift tıklama koruması aktifse işlemi durdur
+            if (isActionLocked) return;
+            isActionLocked = true;
+
+            clearInterval(timerInterval);
+            playSuccessSound(); // 🎵 Doğru cevap sesi
+            
+            const winner = currentPair[playerSide - 1];
+            if (!winner) {
+                isActionLocked = false;
+                return;
+            }
+            winner.score += 5; // Genel skora 5 ekle
+            roundScores[playerSide - 1] += 5; // Tur skoruna ekle
+
+            // Puan Kayan Efekti Uygula
+            showPointFloat(playerSide);
+
+            // Kutlama Konfetisi Patlat
+            confetti({
+                particleCount: 100,
+                spread: 60,
+                origin: { y: 0.6 }
+            });
+
+            currentQuestionIndex++;
+            roundQuestionCount++;
+
+            updateLeaderboard();
+            saveGameState();
+
+            setTimeout(() => {
+                isActionLocked = false; // İşlem tamamen bittiğinde yeni tıklamalara izin ver
+                if (roundQuestionCount >= QUESTIONS_PER_ROUND) {
+                    endCurrentRound();
+                } else {
+                    loadQuestionIntoUI();
+                }
+            }, 1200);
+        }
+
+        // Puan Animasyonu
+        function showPointFloat(playerSide) {
+            const targetBox = playerSide === 1 ? document.getElementById("p1-card") : document.getElementById("p2-card");
+            
+            const floater = document.createElement("div");
+            floater.className = "point-float font-black text-4xl text-emerald-500 drop-shadow-md";
+            floater.innerText = "+5";
+            
+            targetBox.appendChild(floater);
+            
+            setTimeout(() => {
+                floater.remove();
+            }, 1000);
+        }
+
+        // Pas Geçme
+        function skipQuestion() {
+            if (isActionLocked) return;
+            isActionLocked = true;
+
+            clearInterval(timerInterval);
+            playSkipSound(); // ⏭️ Pas geçme sesi
+            currentQuestionIndex++;
+            roundQuestionCount++;
+
+            saveGameState();
+
+            setTimeout(() => {
+                isActionLocked = false; // Kilidi kaldır
+                if (roundQuestionCount >= QUESTIONS_PER_ROUND) {
+                    endCurrentRound();
+                } else {
+                    loadQuestionIntoUI();
+                }
+            }, 300);
+        }
+
+        // Cevap Gizleme/Gösterme
+        function toggleAnswer() {
+            document.getElementById("answer-preview").classList.toggle("hidden");
+        }
+
+        // Turun Kapanması
+        function endCurrentRound() {
+            clearInterval(timerInterval);
+            playRoundEndSound(); // 🔔 Maç bitti sesi
+
+            // İki oyuncunun da maç sayısını arttır (Güvenlik kontrolleriyle beraber)
+            if (currentPair && currentPair[0] && currentPair[1]) {
+                currentPair[0].matches += 1;
+                currentPair[1].matches += 1;
+            }
+
+            updateLeaderboard();
+            saveGameState();
+
+            // Tur Sonuçlarını modalda göster
+            document.getElementById("round-p1-result").innerHTML = `<span>${currentPair[0] ? currentPair[0].name : 'Oyuncu 1'}:</span> <span class="font-black">${roundScores[0]} Puan</span>`;
+            document.getElementById("round-p2-result").innerHTML = `<span>${currentPair[1] ? currentPair[1].name : 'Oyuncu 2'}:</span> <span class="font-black">${roundScores[1]} Puan</span>`;
+
+            // Modalı Aç
+            document.getElementById("round-modal").classList.remove("hidden");
+        }
+
+        // Tur Modalını Kapatıp Sonraki Maça Geçiş
+        function closeRoundModalAndProceed() {
+            if (isActionLocked) return;
+            isActionLocked = true;
+
+            document.getElementById("round-modal").classList.add("hidden");
+            currentMatchIndex++; // Bir sonraki maça geç
+            
+            setTimeout(() => {
+                isActionLocked = false;
+                prepareNextMatch();
+            }, 200);
+        }
+
+        // Canlı Puan Tablosunu Güncelleme
+        function updateLeaderboard() {
+            const tbody = document.getElementById("leaderboard-body");
+            tbody.innerHTML = "";
+
+            // Oyuncuları puana göre sırala (Büyükten küçüğe)
+            const sorted = [...players].sort((a, b) => b.score - a.score);
+
+            sorted.forEach((p, idx) => {
+                const tr = document.createElement("tr");
+                tr.className = idx === 0 ? "bg-amber-50/50 font-bold" : "hover:bg-slate-50";
+                
+                let rankEmoji = idx + 1;
+                if (idx === 0) rankEmoji = "🥇";
+                if (idx === 1) rankEmoji = "🥈";
+                if (idx === 2) rankEmoji = "🥉";
+
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-slate-500">${rankEmoji}</td>
+                    <td class="p-4 text-slate-800 font-semibold">${p.name}</td>
+                    <td class="p-4 text-indigo-600 font-extrabold text-base">${p.score} Puan</td>
+                    <td class="p-4 text-slate-500 text-sm">${p.matches} Tur</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Turnuva Bitirme Kararı
+        function confirmEndGame() {
+            document.getElementById("confirm-modal").classList.remove("hidden");
+        }
+
+        function closeConfirm() {
+            document.getElementById("confirm-modal").classList.add("hidden");
+        }
+
+        // Turnuvayı Tamamen Bitirme ve Şampiyon Seçimi
+        function endGame() {
+            clearInterval(timerInterval);
+            closeConfirm();
+            clearSavedGame(); // Kurtarma durumunu güvenle sıfırla
+            playFanfareSound(); // 🏆 Şampiyonluk fanfarı
+
+            const sorted = [...players].sort((a, b) => b.score - a.score);
+            
+            // Mega Şampiyonluk Konfetisi
+            var duration = 4 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 7,
+                    angle: 60,
+                    spread: 60,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 7,
+                    angle: 120,
+                    spread: 60,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // Şampiyon Verilerini Ekrana Yazdır
+            document.getElementById("champion-name").innerText = sorted[0].name;
+            document.getElementById("champion-score").innerText = `Kazanılan Toplam Skor: ${sorted[0].score} Puan!`;
+
+            // İlk 3 Derecesini Kürsüye Yaz
+            const podiumList = document.getElementById("podium-list");
+            podiumList.innerHTML = "";
+            for (let i = 0; i < Math.min(3, sorted.length); i++) {
+                const badge = i === 0 ? "🥇" : (i === 1 ? "🥈" : "🥉");
+                podiumList.innerHTML += `
+                    <div class="flex justify-between">
+                        <span>${badge} ${i+1}. ${sorted[i].name}</span>
+                        <span class="text-indigo-600">${sorted[i].score} Puan</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById("champion-modal").classList.remove("hidden");
+        }
+
+        function closeChampionModalOnly() {
+            document.getElementById("champion-modal").classList.add("hidden");
+        }
+
+        function restartWholeGame() {
+            clearSavedGame();
+            document.getElementById("champion-modal").classList.add("hidden");
+            document.getElementById("game-screen").classList.add("hidden");
+            document.getElementById("review-screen").classList.add("hidden");
+            document.getElementById("setup-screen").classList.remove("hidden");
+        }
+
+        // Özel Uyarı Mesajı Motoru (Alert alternatifi)
+        function showCustomAlert(icon, title, message) {
+            document.getElementById("alert-icon").innerText = icon;
+            document.getElementById("alert-title").innerText = title;
+            document.getElementById("alert-message").innerText = message;
+            document.getElementById("alert-modal").classList.remove("hidden");
+        }
+
+        function closeAlert() {
+            document.getElementById("alert-modal").classList.add("hidden");
+        }
+
+        // Diziyi Rastgele Sıraya Sokma Algoritması (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[array[j]]] = [array[array[j]], array[i]];
+            }
+        }
+
+        // ==========================================
+        // ⌨️ UÇ DURUM ÇÖZÜMÜ: KLAVYE KISAYOLLARI (Öğretmen Kolaylığı)
+        // ==========================================
+        window.addEventListener("keydown", function(event) {
+            // Eğer oyun ekranı açık değilse kısayolları çalıştırma
+            if (document.getElementById("game-screen").classList.contains("hidden")) return;
+            
+            // Eğer bir input veya textarea içindeyse öğretmen kısayollar kilitlensin
+            if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA") return;
+
+            switch(event.key.toLowerCase()) {
+                case "1":
+                case "a":
+                    awardPoint(1); // Sol Oyuncu Bildi
+                    break;
+                case "2":
+                case "l":
+                    awardPoint(2); // Sağ Oyuncu Bildi
+                    break;
+                case " ":
+                case "spacebar":
+                    event.preventDefault(); // Sayfa kaymasını önle
+                    toggleTimer(); // Süreyi Duraklat / Başlat
+                    break;
+                case "p":
+                case "arrowdown":
+                    skipQuestion(); // Pas Geç
+                    break;
+                case "c":
+                case "arrowup":
+                    toggleAnswer(); // Cevabı Göster / Gizle
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
